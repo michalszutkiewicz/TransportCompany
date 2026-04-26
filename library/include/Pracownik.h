@@ -1,13 +1,20 @@
-//
-// Created by Kinga Ratajska on 15/04/2026.
-//
-
 #ifndef ATOM_PN_1330_06_PRACOWNIK_H
 #define ATOM_PN_1330_06_PRACOWNIK_H
+#pragma once
+#include "Zasob.h"
 
+class Pracownik : public Zasob {
+private:
+    std::string imieNazwisko;
+    std::string pesel;
+    bool posiadaUprawnieniaCE;
 
-class Pracownik {
+public:
+    Pracownik(std::string id, std::string dane, std::string psl, bool uprawnienia);
+
+    // Nadpisujemy metodę wirtualną
+    bool czySpełniaWymagania(double progUmiejetnosci) const override;
+
+    std::string pobierzDane() const { return imieNazwisko; }
 };
-
-
 #endif //ATOM_PN_1330_06_PRACOWNIK_H

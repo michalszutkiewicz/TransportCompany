@@ -17,4 +17,5 @@ add_executable(ATOM_PN_1330_06
         library/src/TransportStandardowy.cpp
         library/src/Zlecenie.cpp
         library/include/Zasob.h
+        library/include/Pojazd.h
 )
