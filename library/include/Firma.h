@@ -5,7 +5,8 @@
 
 // Forward declarations
 class Klient; //lepiej dodac odrazu klase a poziej wysylac ja do innego pliku niz tak w kolko bedzie sie wykonywac raz to raz to
-class Zasob;
+class Pojazd;
+class Pracownik;
 class Zlecenie;
 
 class Firma {
@@ -14,7 +15,8 @@ private:
     
     // Kontenery na dane (polimorfizmy)
     std::vector<std::shared_ptr<Klient>> klienci;
-    std::vector<std::shared_ptr<Zasob>> zasoby;
+    std::vector<std::shared_ptr<Pojazd>> pojazdy;
+    std::vector<std::shared_ptr<Pracownik>> prcaownicy;
     std::vector<std::shared_ptr<Zlecenie>> zlecenia;
 
 public:
@@ -23,16 +25,12 @@ public:
 
     // zarządzanie Klientami
     void dodajKlienta(std::shared_ptr<Klient> klient);
-    std::shared_ptr<Klient> znajdzKlienta(const std::string& id);
-    const std::vector<std::shared_ptr<Klient>>& pobierzWszystkichKlientow() const;
 
     //zarządzanie Zasobami
-    void dodajZasob(std::shared_ptr<Zasob> zasob);
-    std::vector<std::shared_ptr<Zasob>> znajdzDostepneZasoby() const;
+    void rejestrujPojazd(std::shared_ptr<Pojazd> zasob);
+    void zatrudnijPracownika(std::shared_ptr<Pracownik> zasob);
 
-    // zarządzanie Zleceniami
-    void utworzZlecenie(std::shared_ptr<Zlecenie> zlecenie);
-    const std::vector<std::shared_ptr<Zlecenie>>& pobierzWszystkieZlecenia() const;
+    std::shared_ptr<Klient> pobierzKlienta(std::string id);
 
     // zetody biznesowe
     double obliczCalkowityPrzychod() const;

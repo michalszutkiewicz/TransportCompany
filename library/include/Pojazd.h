@@ -1,21 +1,25 @@
 #ifndef ATOM_PN_1330_06_POJAZD_H
 #define ATOM_PN_1330_06_POJAZD_H
-#pragma once
-#include "Zasob.h"
 
-class Pojazd : public Zasob {
+#pragma once
+#include <string>
+#include <vector>
+#include "Termin.h"
+
+class Pojazd  {
 private:
-    double maxLadownosc; // w tonach
     std::string nrRejestracyjny;
+    std::vector<Termin> zajeteTerminy;
 
 public:
-    Pojazd(std::string id, std::string nrRej, double ladownosc);
+    Pojazd(std::string nrRej);
 
-    //nadpisujemy metodę wirtualną z klasy Zasob
-    bool czySpełniaWymagania(double wymaganaWaga) const override;
+    virtual ~Pojazd() = default;
 
-    //metoda
-    std::string pobierzNrRej() const { return nrRejestracyjny; }
+    bool czyDostepny(const Termin& t) const;
+    void zarezerwuj(const Termin& t);
+
+    virtual std::string pobierzOpisPojazdu() const = 0;
 };
 
 #endif //ATOM_PN_1330_06_POJAZD_H

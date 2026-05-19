@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include "Termin.h"
 
 // Forward declarations
 class Klient;
@@ -17,7 +18,7 @@ class Zasob;
 class Zlecenie {
 private:
     std::string idZlecenia;
-    std::string terminRealizacji;
+    Termin okresRealizacji;
     bool czyRozliczone;
 
     std::shared_ptr<Klient> klient;
@@ -25,7 +26,7 @@ private:
     std::vector<std::shared_ptr<Zasob>> przypisaneZasoby;
 
 public:
-    Zlecenie(std::string id, std::string termin, std::shared_ptr<Klient> k, std::shared_ptr<Usluga> u);
+    Zlecenie(std::string id, Termin okres, std::string termin, std::shared_ptr<Klient> k, std::shared_ptr<Usluga> u);
 
     //zarządzanie zasobami
     void dodajZasob(std::shared_ptr<Zasob> zasob);
