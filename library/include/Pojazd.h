@@ -9,16 +9,17 @@
 class Pojazd  {
 private:
     std::string nrRejestracyjny;
+    double kosztAmortyzacji;
     std::vector<Termin> zajeteTerminy;
 
 public:
-    Pojazd(std::string nrRej);
-
+    Pojazd(std::string nrRej, double kosztAmortyzacji);
     virtual ~Pojazd() = default;
 
     bool czyDostepny(const Termin& t) const;
-    void zarezerwuj(const Termin& t);
+    void zarezerwujTermin(const Termin& t);
 
+    virtual bool sprawdzLadownosc(double wymaganaWaga, double objetosc) const = 0;
     virtual std::string pobierzOpisPojazdu() const = 0;
 };
 

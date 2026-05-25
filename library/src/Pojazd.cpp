@@ -1,9 +1,12 @@
-#include "Pojazd.h"
+#include "../include/Pojazd.h"
 
-Pojazd::Pojazd(std::string id, std::string nrRej, double ladownosc) 
-    : Zasob(id), nrRejestracyjny(nrRej), maxLadownosc(ladownosc) {}
+Pojazd::Pojazd(std::string nrRej, double kosztAmortyzacji)
+    : nrRejestracyjny(nrRej), kosztAmortyzacji(kosztAmortyzacji) {}
 
-bool Pojazd::czySpełniaWymagania(double wymaganaWaga) const {
-    //sprawdzamy czy pojazd jest wolny ORAZ czy udźwignie towar
-    return sprawdzCzyWolny() && (maxLadownosc >= wymaganaWaga);
+bool Pojazd::czyDostepny(const Termin& t) const {
+    return true; 
+}
+
+void Pojazd::zarezerwujTermin(const Termin& t) {
+    zajeteTerminy.push_back(t);
 }

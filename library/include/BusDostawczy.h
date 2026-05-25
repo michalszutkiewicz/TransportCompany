@@ -1,8 +1,7 @@
-#ifndef POBI_BUSDOSTAWCZY_H
-#define POBI_BUSDOSTAWCZY_H
+#ifndef ATOM_PN_1330_06_BUSDOSTAWCZY_H
+#define ATOM_PN_1330_06_BUSDOSTAWCZY_H
 
 #pragma once
-
 #include "Pojazd.h"
 
 class BusDostawczy : public Pojazd {
@@ -10,11 +9,10 @@ private:
     double pojemnoscM3;
 
 public:
-    BusDostawczy(std::string nrRej, double pojemnoscM3);
+    BusDostawczy(std::string nrRej, double kosztAmortyzacji, double pojemnoscM3);
 
-    // Nadpisujemy metody z klasy Pojazd
     bool sprawdzLadownosc(double wymaganaWaga, double objetosc) const override;
     std::string pobierzOpisPojazdu() const override;
 };
 
-#endif //POBI_BUSDOSTAWCZY_H
+#endif //ATOM_PN_1330_06_BUSDOSTAWCZY_H

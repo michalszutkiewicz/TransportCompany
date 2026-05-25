@@ -1,20 +1,28 @@
 #ifndef ATOM_PN_1330_06_PRACOWNIK_H
 #define ATOM_PN_1330_06_PRACOWNIK_H
-#pragma once
-#include "Zasob.h"
 
-class Pracownik : public Zasob {
+#pragma once
+#include <string>
+#include <vector>
+#include "Termin.h"
+
+class Pracownik {
 private:
-    std::string imieNazwisko;
     std::string pesel;
-    bool posiadaUprawnieniaCE;
+    std::string imieNazwisko;
+    double stawkaGodzinowa;
+    std::vector<Termin> zajeteTerminy;
 
 public:
-    Pracownik(std::string id, std::string dane, std::string psl, bool uprawnienia);
+    Pracownik(std::string pesel, std::string imieNazwisko, double stawkaGodzinowa);
+    virtual ~Pracownik() = default;
 
-    // Nadpisujemy metodę wirtualną
-    bool czySpełniaWymagania(double progUmiejetnosci) const override;
+    bool czyDostepny(const Termin& t) const;
+    void zarezerwujTermin(const Termin& t);
 
-    std::string pobierzDane() const { return imieNazwisko; }
+    // Metody czysto wirtualne
+    virtual bool mozeWykonacPrace(std::string wymaganaKategoria) const = 0;
+    virtual std::string pobierzRole() const = 0;
 };
+
 #endif //ATOM_PN_1330_06_PRACOWNIK_H

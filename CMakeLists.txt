@@ -16,6 +16,8 @@ add_executable(ATOM_PN_1330_06
         library/src/TransportEkspresowy.cpp
         library/src/TransportStandardowy.cpp
         library/src/Zlecenie.cpp
-        library/include/Zasob.h
-        library/include/Pojazd.h
+        library/src/Ciezarowka.cpp
+        library/src/BusDostawczy.cpp
+        library/src/Kierowca.cpp
+        library/src/Magazynier.cpp
 )
