@@ -1,8 +1,9 @@
-#include "Firma.h"
-#include "Klient.h"
-#include "Zasob.h"
-#include "Zlecenie.h"
-#include <algorithm> //chuj wie czy to sie przyda ale wydaje mi sie ze tak
+#include "../include/Firma.h"
+#include "../include/Klient.h"
+#include "../include/Pojazd.h"
+#include "../include/Pracownik.h"
+#include "../include/Zlecenie.h"
+#include <algorithm>
 
 Firma::Firma(std::string nazwa) : nazwaFirmy(nazwa) {}
 
@@ -12,41 +13,45 @@ void Firma::dodajKlienta(std::shared_ptr<Klient> klient) {
     }
 }
 
-const std::vector<std::shared_ptr<Klient>>& Firma::pobierzWszystkichKlientow() const {
-    return klienci;
-}
-
-void Firma::dodajZasob(std::shared_ptr<Zasob> zasob) {
-    if (zasob) {
-        zasoby.push_back(zasob);
+void Firma::rejestrujPojazd(std::shared_ptr<Pojazd> pojazd) {
+    if (pojazd) {
+        pojazdy.push_back(pojazd);
     }
 }
 
-std::vector<std::shared_ptr<Zasob>> Firma::znajdzDostepneZasoby() const {
-    std::vector<std::shared_ptr<Zasob>> dostepne;
-    for (const auto& z : zasoby) {
-        if (z->sprawdzCzyWolny()) {
-            dostepne.push_back(z);
-        }
+void Firma::zatrudnijPracownika(std::shared_ptr<Pracownik> pracownik) {
+    if (pracownik) {
+        pracownicy.push_back(pracownik);
     }
-    return dostepne;
 }
 
-void Firma::utworzZlecenie(std::shared_ptr<Zlecenie> zlecenie) {
+void Firma::dodajZlecenie(std::shared_ptr<Zlecenie> zlecenie) {
     if (zlecenie) {
         zlecenia.push_back(zlecenie);
     }
 }
 
-const std::vector<std::shared_ptr<Zlecenie>>& Firma::pobierzWszystkieZlecenia() const {
-    return zlecenia;
+std::shared_ptr<Klient> Firma::pobierzKlienta(std::string id) {
+    // używamy <algorithm> i wyrażenia lambda do wyszukania klienta
+    auto it = std::find_if(klienci.begin(), klienci.end(),
+        [&id](const std::shared_ptr<Klient>& k) {
+            return k != nullptr && k->pobierzId() == id;
+        });
+
+    if (it != klienci.end()) {
+        return *it;
+    }
+
+    return nullptr;
 }
 
 double Firma::obliczCalkowityPrzychod() const {
-    double suma = 0;
+    double suma = 0.0;
     for (const auto& z : zlecenia) {
-        // Tutaj polimorfizm z klasy Usluga wywołany wewnątrz Zlecenia
-        // suma += z->pobierzKoszt(); 
+        // doliczamy do przychodu tylko Zlecenia, które zostały faktycznie zrealizowane/rozliczone.
+        if (z && z->czyJestRozliczone()) {
+            suma += z->obliczPelnyKoszt();
+        }
     }
     return suma;
 }

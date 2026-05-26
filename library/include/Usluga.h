@@ -1,9 +1,8 @@
-#pragma once
-#include <string>
-
 #ifndef ATOM_PN_1330_06_USLUGA_H
 #define ATOM_PN_1330_06_USLUGA_H
 
+#pragma once
+#include <string>
 
 class Usluga {
 protected:
@@ -11,15 +10,16 @@ protected:
     double dystans; // w kilometrach
 
 public:
-    // Konstruktor
-    Usluga(std::string nazwa, double dystans)
-        : nazwaZlecenia(nazwa), dystans(dystans) {}
+    Usluga(std::string nazwa, double dystans);
 
-    // WIRTUALNY DESTRUKTOR (kluczowy przy polimorfizmie)
+    // WIRTUALNY DESTRUKTOR
     virtual ~Usluga() = default;
 
+    // metody czysto wirtualne
     virtual double obliczKoszt() const = 0;
     virtual std::string pobierzSzczegoly() const = 0;
-    std::string pobierzNazwe() const { return nazwaZlecenia; }
+
+    std::string pobierzNazwe() const;
 };
+
 #endif //ATOM_PN_1330_06_USLUGA_H

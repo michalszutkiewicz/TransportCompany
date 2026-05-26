@@ -36,13 +36,12 @@ int main() {
     mojaFirma->rejestrujPojazd(tir);
     mojaFirma->zatrudnijPracownika(kierowca);
 
-    /*
     // 4. Tworzenie usługi (Tu działa polimorfizm!)
     // Wybieramy transport ekspresowy: 500km, 5.0 PLN/km, 200 PLN opłaty stałej
     auto ekspres = std::make_shared<TransportEkspresowy>("Dostawa czesci", 500.0, 5.0, 200.0);
 
     // 5. Tworzenie i konfiguracja zlecenia
-    auto noweZlecenie = std::make_shared<Zlecenie>("Z/2026/01", "2026-04-30", klient1, ekspres);
+    auto noweZlecenie = std::make_shared<Zlecenie>(1,"Z/2026/01", "2026-04-30", klient1, ekspres);
 
     // Przypisujemy zasoby (automatycznie zmieniają status na zajęte)
     noweZlecenie->dodajZasob(tir);

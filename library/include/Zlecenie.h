@@ -13,7 +13,8 @@
 // Forward declarations
 class Klient;
 class Usluga;
-class Zasob;
+class Pojazd;
+class Pracownik;
 
 class Zlecenie {
 private:
@@ -23,13 +24,16 @@ private:
 
     std::shared_ptr<Klient> klient;
     std::shared_ptr<Usluga> usluga;
-    std::vector<std::shared_ptr<Zasob>> przypisaneZasoby;
+    std::vector<std::shared_ptr<Pojazd>> przypisanePojazdy;
+    std::vector<std::shared_ptr<Pracownik>> przypisaniPracownicy;
 
 public:
-    Zlecenie(std::string id, Termin okres, std::string termin, std::shared_ptr<Klient> k, std::shared_ptr<Usluga> u);
+    Zlecenie(std::string id, Termin okres, std::shared_ptr<Klient> k, std::shared_ptr<Usluga> u);
 
     //zarządzanie zasobami
-    void dodajZasob(std::shared_ptr<Zasob> zasob);
+    void dodajPojazd(std::shared_ptr<Pojazd> pojazd);
+    void dodajPracownika(std::shared_ptr<Pracownik> pracownik);
+
 
     //logika finansowa i status
     double obliczPelnyKoszt() const;

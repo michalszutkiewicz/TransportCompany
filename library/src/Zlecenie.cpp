@@ -1,31 +1,45 @@
 #include "../include/Zlecenie.h"
-#include "Klient.h"
-#include "Usluga.h"
-#include "Zasob.h"
+#include "../include/Klient.h"
+#include "../include/Usluga.h"
+#include "../include/Pojazd.h"
+#include "../include/Pracownik.h"
 
-Zlecenie::Zlecenie(std::string id, std::string termin, std::shared_ptr<Klient> k, std::shared_ptr<Usluga> u)
-    : idZlecenia(id), terminRealizacji(termin), klient(k), usluga(u), czyRozliczone(false) {}
+Zlecenie::Zlecenie(std::string id, Termin okres, std::shared_ptr<Klient> k, std::shared_ptr<Usluga> u)
+    : idZlecenia(id), okresRealizacji(okres), klient(k), usluga(u), czyRozliczone(false) {}
 
-void Zlecenie::dodajZasob(std::shared_ptr<Zasob> zasob) {
-    if (zasob) {
-        przypisaneZasoby.push_back(zasob);
-        zasob->ustawDostepnosc(false); //automatyczna rezerwacja zasobu(jak uzywamy w tym zleceniu to nie moze byc przypisane do innego )
+void Zlecenie::dodajPojazd(std::shared_ptr<Pojazd> pojazd) {
+    if (pojazd) {
+        przypisanePojazdy.push_back(pojazd);
+        // automatyczna rezerwacja konkretnego terminu
+        pojazd->zarezerwujTermin(okresRealizacji);
+    }
+}
+
+void Zlecenie::dodajPracownika(std::shared_ptr<Pracownik> pracownik) {
+    if (pracownik) {
+        przypisaniPracownicy.push_back(pracownik);
+        // automatyczna rezerwacja konkretnego terminu u pracownika
+        pracownik->zarezerwujTermin(okresRealizacji);
     }
 }
 
 double Zlecenie::obliczPelnyKoszt() const {
     if (usluga) {
-        return usluga->obliczKoszt(); //polimorficzne wywołanie
+        return usluga->obliczKoszt();
     }
-    return 0.0;
+    return 0;
 }
 
-
-//nwm czy to jest dobrze bo mozg mi to spalilo wiec jak co to popraw!!!!
 std::string Zlecenie::pobierzPodsumowanie() const {
-    std::string info = "Zlecenie nr: " + idZlecenia + " | Termin: " + terminRealizacji;
+    std::string info = "Zlecenie nr: " + idZlecenia;
+
     info += "\nKlient: " + (klient ? klient->pobierzPelneDane() : "Brak danych");
     info += "\nKoszt: " + std::to_string(obliczPelnyKoszt()) + " PLN";
     info += "\nStatus: " + std::string(czyRozliczone ? "Rozliczone" : "W realizacji");
+
+    // Dodatkowe statystyki pokazujące stan zasobów
+    info += "\nPrzypisani pracownicy: " + std::to_string(przypisaniPracownicy.size());
+    info += "\nPrzypisane pojazdy: " + std::to_string(przypisanePojazdy.size());
+
     return info;
 }

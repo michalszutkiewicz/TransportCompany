@@ -20,4 +20,6 @@ add_executable(ATOM_PN_1330_06
         library/src/BusDostawczy.cpp
         library/src/Kierowca.cpp
         library/src/Magazynier.cpp
+        library/src/Termin.cpp
+        library/src/Usluga.cpp
 )
