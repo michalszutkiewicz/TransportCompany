@@ -1,21 +1,27 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <string>
+#include <boost/date_time/posix_time/posix_time.hpp> // Niezbędne dla klasy Termin
 
-//naglowki logiki
+// Nagłówki logiki
 #include "Firma.h"
 #include "Klient.h"
 #include "Zlecenie.h"
+#include "Termin.h" // Dodany brakujący nagłówek
 
-//nagłówki polimorficzne-zasoby
+// Nagłówki polimorficzne zasoby
 #include "Pojazd.h"
 #include "Pracownik.h"
 #include "Ciezarowka.h"
 #include "Kierowca.h"
 
-//nagłówki polimorficzne -uslugi
+// Nagłówki polimorficzne uslugi
 #include "TransportStandardowy.h"
 #include "TransportEkspresowy.h"
+
+namespace pt = boost::posix_time;
+namespace gr = boost::gregorian;
 
 int main() {
     std::cout << "--- System Zarzadzania Firma Transportowa ---" << std::endl;
@@ -41,24 +47,29 @@ int main() {
     auto ekspres = std::make_shared<TransportEkspresowy>("Dostawa czesci", 500.0, 5.0, 200.0);
 
     // 5. Tworzenie i konfiguracja zlecenia
-    auto noweZlecenie = std::make_shared<Zlecenie>(1,"Z/2026/01", "2026-04-30", klient1, ekspres);
+    // Tworzymy obiekty czasu dla Terminu (np. 30 kwietnia 2026 od 08:00 do 16:00)
+    pt::ptime czasRozpoczecia(gr::date(2026, 4, 30), pt::hours(8));
+    pt::ptime czasZakonczenia(gr::date(2026, 4, 30), pt::hours(16));
+    Termin okresZlecenia(czasRozpoczecia, czasZakonczenia);
 
-    // Przypisujemy zasoby (automatycznie zmieniają status na zajęte)
-    noweZlecenie->dodajZasob(tir);
-    noweZlecenie->dodajZasob(kierowca);
+
+    auto noweZlecenie = std::make_shared<Zlecenie>("Z/2026/01", okresZlecenia, klient1, ekspres);
+
+    // Przypisujemy zasoby (automatycznie rezerwują termin w wektorze zajeteTerminy)
+    noweZlecenie->dodajPojazd(tir);
+    noweZlecenie->dodajPracownika(kierowca);
 
     // Rejestrujemy zlecenie w systemie firmy
-    mojaFirma->utworzZlecenie(noweZlecenie);
+    mojaFirma->dodajZlecenie(noweZlecenie);
 
     // 6. WYNIK TESTU
     std::cout << "\n--- PODSUMOWANIE ZLECENIA ---" << std::endl;
     std::cout << noweZlecenie->pobierzPodsumowanie() << std::endl;
     std::cout << "Szczegoly uslugi: " << ekspres->pobierzSzczegoly() << std::endl;
 
-    // Sprawdzenie statusu zasobów po rezerwacji
-    std::cout << "\nStatus zasobu TIR: " << (tir->sprawdzCzyWolny() ? "Wolny" : "ZAJETY") << std::endl;
+    // Sprawdzenie statusu zasobów w zadanym terminie
+    std::cout << "\nStatus zasobu TIR w tym terminie: "
+              << (tir->czyDostepny(okresZlecenia) ? "Wolny" : "ZAJETY (KOLIZJA)") << std::endl;
 
-    std::cout << "\n--- Test zakonczony sukcesem ---" << std::endl;
-*/
     return 0;
 }
