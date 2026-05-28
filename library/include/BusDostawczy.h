@@ -12,6 +12,7 @@ public:
     BusDostawczy(std::string nrRej, double kosztAmortyzacji, double pojemnoscM3);
 
     bool sprawdzLadownosc(double wymaganaWaga, double objetosc) const override;
+    std::string pobierzWymaganaKategorie() const override { return "B"; }
     std::string pobierzOpisPojazdu() const override;
 };
 

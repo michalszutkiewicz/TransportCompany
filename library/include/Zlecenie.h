@@ -43,6 +43,9 @@ public:
     //gettery do dokumentacji/interfejsu
     std::string pobierzPodsumowanie() const;
     std::shared_ptr<Klient> pobierzKlienta() const { return klient; }
+    Termin pobierzOkres() const { return okresRealizacji; }
+    const std::vector<std::shared_ptr<Pojazd>>& pobierzPojazdy() const { return przypisanePojazdy; }
+    const std::vector<std::shared_ptr<Pracownik>>& pobierzPracownicy() const { return przypisaniPracownicy; }
 };
 
 #endif //ATOM_PN_1330_06_ZLECENIE_H

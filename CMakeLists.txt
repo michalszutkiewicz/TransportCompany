@@ -22,4 +22,5 @@ add_executable(ATOM_PN_1330_06
         library/src/Magazynier.cpp
         library/src/Termin.cpp
         library/src/Usluga.cpp
+        library/src/managers/MenedzerZlecen.cpp
 )

@@ -8,7 +8,13 @@ bool Magazynier::mozeWykonacPrace(std::string wymaganaKategoria) const {
     if (wymaganaKategoria == "WozekWidlowy") {
         return uprawnieniaNaWozkiWidlowe;
     }
-    // jeśli nie wymaga wózka, zakładamy, że magazynier może to zrobić
+    
+    // Magazynier nie posiada kategorii prawa jazdy (B, C, C+E)
+    if (wymaganaKategoria == "B" || wymaganaKategoria == "C" || wymaganaKategoria == "C+E") {
+        return false;
+    }
+
+    // Dla innych ogólnych prac (nie wymagających uprawnień) zwracamy true
     return true; 
 }
 

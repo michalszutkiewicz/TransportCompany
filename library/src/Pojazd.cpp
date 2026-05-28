@@ -4,7 +4,12 @@ Pojazd::Pojazd(std::string nrRej, double kosztAmortyzacji)
     : nrRejestracyjny(nrRej), kosztAmortyzacji(kosztAmortyzacji) {}
 
 bool Pojazd::czyDostepny(const Termin& t) const {
-    return true; 
+    for (const auto& zajety : zajeteTerminy) {
+        if (zajety.czyKoliduje(t)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void Pojazd::zarezerwujTermin(const Termin& t) {

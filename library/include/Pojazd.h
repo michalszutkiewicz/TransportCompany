@@ -20,6 +20,7 @@ public:
     void zarezerwujTermin(const Termin& t);
 
     virtual bool sprawdzLadownosc(double wymaganaWaga, double objetosc) const = 0;
+    virtual std::string pobierzWymaganaKategorie() const = 0;
     virtual std::string pobierzOpisPojazdu() const = 0;
 };
 

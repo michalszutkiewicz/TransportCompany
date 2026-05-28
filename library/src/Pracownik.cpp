@@ -5,6 +5,11 @@ Pracownik::Pracownik(std::string pesel, std::string imieNazwisko, double stawkaG
     : pesel(pesel), imieNazwisko(imieNazwisko), stawkaGodzinowa(stawkaGodzinowa) {}
 
 bool Pracownik::czyDostepny(const Termin& t) const {
+    for (const auto& zajety : zajeteTerminy) {
+        if (zajety.czyKoliduje(t)) {
+            return false;
+        }
+    }
     return true;
 }
 

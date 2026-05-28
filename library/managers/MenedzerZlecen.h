@@ -2,7 +2,9 @@
 #define POBI_MENEDZERZLECEN_H
 
 #pragma once
+#include <memory>
 
+// Forward declarations
 class Zlecenie;
 class Pojazd;
 class Pracownik;
@@ -11,12 +13,12 @@ class MenedzerZlecen {
 public:
     MenedzerZlecen() = default;
 
-    // Przekazujemy Zlecenie przez referencję (bo będziemy je modyfikować np. dodając pojazd)
-    bool probaPrzypisaniaPojazdu(Zlecenie& z, Pojazd* p);
-
-    bool probaPrzypisaniaPracownika(Zlecenie& z, Pracownik* pr);
+    // Przechodzimy na shared_ptr dla spójności z klasą Zlecenie
+    bool probaPrzypisaniaPojazdu(Zlecenie& z, std::shared_ptr<Pojazd> p);
+    bool probaPrzypisaniaPracownika(Zlecenie& z, std::shared_ptr<Pracownik> pr);
 
     bool weryfikujGotowoscDoRealizacji(const Zlecenie& z);
+    bool sprawdzUprawnienia(std::shared_ptr<Pracownik> pr, std::shared_ptr<Pojazd> p);
 };
 
 #endif //POBI_MENEDZERZLECEN_H

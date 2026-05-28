@@ -13,6 +13,7 @@ public:
     Ciezarowka(std::string nrRej, double kosztAmortyzacji, double maksLadownosc, bool wymagaNaczepy);
 
     bool sprawdzLadownosc(double wymaganaWaga, double objetosc) const override;
+    std::string pobierzWymaganaKategorie() const override { return "C"; }
     std::string pobierzOpisPojazdu() const override;
 };
 
