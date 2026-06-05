@@ -1,8 +1,8 @@
 #include "../include/Pracownik.h"
 
 
-Pracownik::Pracownik(std::string pesel, std::string imieNazwisko, double stawkaGodzinowa)
-    : pesel(pesel), imieNazwisko(imieNazwisko), stawkaGodzinowa(stawkaGodzinowa) {}
+Pracownik::Pracownik(std::string id, std::string imieNazwisko, double stawkaGodzinowa)
+    : idPracownika(id), imieNazwisko(imieNazwisko), stawkaGodzinowa(stawkaGodzinowa) {}
 
 bool Pracownik::czyDostepny(const Termin& t) const {
     for (const auto& zajety : zajeteTerminy) {

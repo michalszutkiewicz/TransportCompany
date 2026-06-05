@@ -11,6 +11,7 @@ private:
 public:
     BusDostawczy(std::string nrRej, double kosztAmortyzacji, double pojemnoscM3);
 
+    bool czyMozeWykonacZlecenie(const Zlecenie& z) const override;
     bool sprawdzLadownosc(double wymaganaWaga, double objetosc) const override;
     std::string pobierzWymaganaKategorie() const override { return "B"; }
     std::string pobierzOpisPojazdu() const override;

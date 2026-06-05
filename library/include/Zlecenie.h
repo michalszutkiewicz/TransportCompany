@@ -4,6 +4,7 @@
 
 #ifndef ATOM_PN_1330_06_ZLECENIE_H
 #define ATOM_PN_1330_06_ZLECENIE_H
+
 #pragma once
 #include <memory>
 #include <vector>
@@ -22,30 +23,34 @@ private:
     Termin okresRealizacji;
     bool czyRozliczone;
 
+    double wymaganaWaga;
+    double objetosc;
+    std::string wymaganaKategoria;
+
     std::shared_ptr<Klient> klient;
     std::shared_ptr<Usluga> usluga;
     std::vector<std::shared_ptr<Pojazd>> przypisanePojazdy;
     std::vector<std::shared_ptr<Pracownik>> przypisaniPracownicy;
 
 public:
-    Zlecenie(std::string id, Termin okres, std::shared_ptr<Klient> k, std::shared_ptr<Usluga> u);
+    Zlecenie(std::string id, Termin okres, std::shared_ptr<Klient> k, std::shared_ptr<Usluga> u, double waga, double obj, std::string kat);
 
-    //zarządzanie zasobami
-    void dodajPojazd(std::shared_ptr<Pojazd> pojazd);
-    void dodajPracownika(std::shared_ptr<Pracownik> pracownik);
-
-
-    //logika finansowa i status
+    void dodajPojazd(std::shared_ptr<Pojazd> p);
+    void dodajPracownika(std::shared_ptr<Pracownik> pr);
     double obliczPelnyKoszt() const;
-    void rozlicz() { czyRozliczone = true; }
+    void rozlicz();
+    Termin pobierzOkres() const;
+    std::string pobierzId() const { return idZlecenia; }
     bool czyJestRozliczone() const { return czyRozliczone; }
-
-    //gettery do dokumentacji/interfejsu
-    std::string pobierzPodsumowanie() const;
     std::shared_ptr<Klient> pobierzKlienta() const { return klient; }
-    Termin pobierzOkres() const { return okresRealizacji; }
     const std::vector<std::shared_ptr<Pojazd>>& pobierzPojazdy() const { return przypisanePojazdy; }
     const std::vector<std::shared_ptr<Pracownik>>& pobierzPracownicy() const { return przypisaniPracownicy; }
+    
+    double pobierzWymaganaWage() const { return wymaganaWaga; }
+    double pobierzObjetosc() const { return objetosc; }
+    std::string pobierzWymaganaKategorie() const { return wymaganaKategoria; }
+    
+    std::string pobierzPodsumowanie() const;
 };
 
 #endif //ATOM_PN_1330_06_ZLECENIE_H

@@ -6,8 +6,14 @@
 #define ATOM_PN_1330_06_OBSLUGAPLIKOW_H
 
 
-class ObslugaPlikow {
-};
+#pragma once
+#include "Firma.h"
+#include <string>
 
+class ObslugaPlikow {
+public:
+    static void zapiszStanSystemu(const Firma& f, const std::string& sciezka);
+    static Firma wczytajStanSystemu(const std::string& sciezka);
+};
 
 #endif //ATOM_PN_1330_06_OBSLUGAPLIKOW_H

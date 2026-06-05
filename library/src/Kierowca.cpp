@@ -1,8 +1,13 @@
 #include "../include/Kierowca.h"
+#include "../include/Zlecenie.h"
 #include <algorithm> // Wymagane dla std::find
 
 Kierowca::Kierowca(std::string pesel, std::string imieNazwisko, double stawkaGodzinowa, std::vector<std::string> kategorie)
     : Pracownik(pesel, imieNazwisko, stawkaGodzinowa), kategoriePrawaJazdy(kategorie) {}
+
+bool Kierowca::czyUmieWykonacZlecenie(const Zlecenie& z) const {
+    return mozeWykonacPrace(z.pobierzWymaganaKategorie());
+}
 
 bool Kierowca::mozeWykonacPrace(std::string wymaganaKategoria) const {
     // czy wymagana kategoria znajduje się w wektorze posiadanych kategorii

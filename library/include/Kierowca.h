@@ -13,6 +13,7 @@ private:
 public:
     Kierowca(std::string pesel, std::string imieNazwisko, double stawkaGodzinowa, std::vector<std::string> kategorie);
 
+    bool czyUmieWykonacZlecenie(const Zlecenie& z) const override;
     bool mozeWykonacPrace(std::string wymaganaKategoria) const override;
     std::string pobierzRole() const override;
 };

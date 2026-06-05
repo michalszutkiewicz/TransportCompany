@@ -1,4 +1,4 @@
-#include "../managers/MenedzerZlecen.h"
+#include "../include/managers/MenedzerZlecen.h"
 #include "../include/Zlecenie.h"
 #include "../include/Pojazd.h"
 #include "../include/Pracownik.h"
@@ -95,4 +95,16 @@ bool MenedzerZlecen::sprawdzUprawnienia(std::shared_ptr<Pracownik> pr, std::shar
     if (!pr || !p) return false;
     std::string wymaganaKat = p->pobierzWymaganaKategorie();
     return pr->mozeWykonacPrace(wymaganaKat);
+}
+
+bool MenedzerZlecen::sprawdzDostepnoscZasobow(const Zlecenie& z) const {
+    // weryfikacja zasobów już przypisanych do zlecenia
+    for (const auto& p : z.pobierzPojazdy()) {
+        if (!p->czyDostepny(z.pobierzOkres())) return false;
+    }
+    for (const auto& pr : z.pobierzPracownicy()) {
+        if (!pr->czyDostepny(z.pobierzOkres())) return false;
+    }
+    
+    return true;
 }

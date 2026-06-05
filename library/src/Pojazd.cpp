@@ -1,7 +1,7 @@
 #include "../include/Pojazd.h"
 
 Pojazd::Pojazd(std::string nrRej, double kosztAmortyzacji)
-    : nrRejestracyjny(nrRej), kosztAmortyzacji(kosztAmortyzacji) {}
+    : numerRejestracyjny(nrRej), kosztAmortyzacji(kosztAmortyzacji) {}
 
 bool Pojazd::czyDostepny(const Termin& t) const {
     for (const auto& zajety : zajeteTerminy) {

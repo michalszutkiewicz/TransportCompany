@@ -1,54 +1,32 @@
-#include "../include/Firma.h"
-#include "../include/Klient.h"
-#include "../include/Pojazd.h"
-#include "../include/Pracownik.h"
-#include "../include/Zlecenie.h"
-#include <algorithm>
+#include "Firma.h"
 
-Firma::Firma(std::string nazwa) : nazwaFirmy(nazwa) {}
+using namespace std;
 
-void Firma::dodajKlienta(std::shared_ptr<Klient> klient) {
-    if (klient) {
-        klienci.push_back(klient);
-    }
+Firma::Firma() {
+    // Miejsce na inicjalizację danymi testowymi zgodnie z wytycznymi UML
 }
 
-void Firma::rejestrujPojazd(std::shared_ptr<Pojazd> pojazd) {
-    if (pojazd) {
-        pojazdy.push_back(pojazd);
-    }
+RepozytoriumKlientow& Firma::pobierzRepozytoriumKlientow() {
+    return repoKlientow;
 }
 
-void Firma::zatrudnijPracownika(std::shared_ptr<Pracownik> pracownik) {
-    if (pracownik) {
-        pracownicy.push_back(pracownik);
-    }
+RepozytoriumPojazdow& Firma::pobierzRepozytoriumPojazdow() {
+    return repoPojazdow;
 }
 
-void Firma::dodajZlecenie(std::shared_ptr<Zlecenie> zlecenie) {
-    if (zlecenie) {
-        zlecenia.push_back(zlecenie);
-    }
+RepozytoriumPracownikow& Firma::pobierzRepozytoriumPracownikow() {
+    return repoPracownikow;
 }
 
-std::shared_ptr<Klient> Firma::pobierzKlienta(std::string id) {
-    // używamy <algorithm> i wyrażenia lambda do wyszukania klienta
-    auto it = std::find_if(klienci.begin(), klienci.end(),
-        [&id](const std::shared_ptr<Klient>& k) {
-            return k != nullptr && k->pobierzId() == id;
-        });
-
-    if (it != klienci.end()) {
-        return *it;
-    }
-
-    return nullptr;
+RepozytoriumZlecen& Firma::pobierzRepozytoriumZlecen() {
+    return repoZlecen;
 }
 
 double Firma::obliczCalkowityPrzychod() const {
     double suma = 0.0;
+    auto zlecenia = repoZlecen.pobierzWszystkie();
+
     for (const auto& z : zlecenia) {
-        // doliczamy do przychodu tylko Zlecenia, które zostały faktycznie zrealizowane/rozliczone.
         if (z && z->czyJestRozliczone()) {
             suma += z->obliczPelnyKoszt();
         }
