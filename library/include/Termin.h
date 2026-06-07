@@ -18,6 +18,10 @@ public:
     // Sprawdzanie czy nie koliduje z innym juz istniejacym terminem
     bool czyKoliduje(const Termin &inny) const;
 
+    pt::ptime pobierzCzasOd() const { return dataOd; }
+    pt::ptime pobierzCzasDo() const { return dataDo; }
+
+    std::string serializuj() const;
 };
 
 #endif //POBI_TERMIN_H

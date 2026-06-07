@@ -30,6 +30,11 @@ public:
     std::string pobierzIdPracownika() const { return idPracownika; }
     // alias dla zgodności z Repo
     std::string pobierzPesel() const { return idPracownika; }
+    std::string pobierzImieNazwisko() const { return imieNazwisko; }
+    double pobierzStawke() const { return stawkaGodzinowa; }
+    virtual std::string pobierzPelneDane() const = 0;
+
+    virtual std::string serializuj() const = 0;
 };
 
 #endif //ATOM_PN_1330_06_PRACOWNIK_H

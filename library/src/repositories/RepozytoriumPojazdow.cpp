@@ -3,6 +3,9 @@
 #include <sstream>
 #include <fstream>
 
+#include "BusDostawczy.h"
+#include "Ciezarowka.h"
+
 using namespace std;
 
 shared_ptr<Pojazd> RepozytoriumPojazdow::pobierzPojazd(const string& id) const {
@@ -79,9 +82,47 @@ void RepozytoriumPojazdow::wczytajStan(const string& sciezka) {
 }
 
 string RepozytoriumPojazdow::serializuj() const {
-    return "SERIALIZOWANE_DANE_POJAZDOW";
+    ostringstream oss;
+    for (const auto& el : elementy) {
+        if (el) {
+            oss << el->serializuj() << "\n";
+        }
+    }
+    return oss.str();
 }
 
 void RepozytoriumPojazdow::deserializuj(const string& dane) {
+    elementy.clear();
+    stringstream ss(dane);
+    string linia;
 
+    while (getline(ss, linia)) {
+        if (linia.empty()) continue;
+
+        stringstream liniaSs(linia);
+        string typ;
+        getline(liniaSs, typ, ';');
+
+        if (typ == "CIEZAROWKA") {
+            string nrRej, kosztStr, ladownoscStr, naczepaStr;
+            getline(liniaSs, nrRej, ';');
+            getline(liniaSs, kosztStr, ';');
+            getline(liniaSs, ladownoscStr, ';');
+            getline(liniaSs, naczepaStr, ';');
+
+            double koszt = stod(kosztStr);
+            double ladownosc = stod(ladownoscStr);
+            bool naczepa = (naczepaStr == "1");
+
+            dodajPojazd(make_shared<Ciezarowka>(nrRej, koszt, ladownosc, naczepa));
+        }
+        else if (typ == "BUS") {
+            string nrRej, kosztStr, pojStr;
+            getline(liniaSs, nrRej, ';');
+            getline(liniaSs, kosztStr, ';');
+            getline(liniaSs, pojStr, ';');
+
+            dodajPojazd(make_shared<BusDostawczy>(nrRej, stod(kosztStr), stod(pojStr)));
+        }
+    }
 }

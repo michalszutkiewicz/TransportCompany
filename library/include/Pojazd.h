@@ -29,6 +29,9 @@ public:
     std::string pobierzNumerRejestracyjny() const { return numerRejestracyjny; }
     // alias dla repo
     std::string pobierzNrRejestracyjny() const { return numerRejestracyjny; }
+    double pobierzKosztAmortyzacji() const { return kosztAmortyzacji; }
+
+    virtual std::string serializuj() const = 0;
 };
 
 #endif //ATOM_PN_1330_06_POJAZD_H

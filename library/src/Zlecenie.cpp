@@ -3,6 +3,7 @@
 #include "../include/Usluga.h"
 #include "../include/Pojazd.h"
 #include "../include/Pracownik.h"
+#include <sstream>
 
 Zlecenie::Zlecenie(std::string id, Termin okres, std::shared_ptr<Klient> k, std::shared_ptr<Usluga> u, double waga, double obj, std::string kat)
     : idZlecenia(id), okresRealizacji(okres), klient(k), usluga(u), czyRozliczone(false), wymaganaWaga(waga), objetosc(obj), wymaganaKategoria(kat) {}
@@ -37,14 +38,54 @@ Termin Zlecenie::pobierzOkres() const {
 }
 
 std::string Zlecenie::pobierzPodsumowanie() const {
-    std::string info = "Zlecenie nr: " + idZlecenia;
+    std::ostringstream oss;
+    oss << "[ZLECENIE " << idZlecenia << "] - Status: "
+        << (czyRozliczone ? "ROZLICZONE" : "W TOKU") << "\n"
+        << "  -> Klient: " << (klient ? klient->pobierzId() : "BRAK KLIENTA") << "\n"
+        << "  -> Ładunek: " << wymaganaWaga << " kg, " << objetosc << " m3 (Wymagana kat: " << wymaganaKategoria << ")\n"
+        << "  -> Termin Od: " << boost::posix_time::to_simple_string(okresRealizacji.pobierzCzasOd())
+        << " Do: " << boost::posix_time::to_simple_string(okresRealizacji.pobierzCzasDo()) << "\n"
+        << "  -> Przypisane Pojazdy (" << przypisanePojazdy.size() << "): ";
 
-    info += "\nKlient: " + (klient ? klient->pobierzPelneDane() : "Brak danych");
-    info += "\nKoszt: " + std::to_string(obliczPelnyKoszt()) + " PLN";
-    info += "\nStatus: " + std::string(czyRozliczone ? "Rozliczone" : "W realizacji");
+    for (const auto& pojazd : przypisanePojazdy) {
+        if (pojazd) oss << pojazd->pobierzNumerRejestracyjny() << " ";
+    }
 
-    info += "\nPrzypisani pracownicy: " + std::to_string(przypisaniPracownicy.size());
-    info += "\nPrzypisane pojazdy: " + std::to_string(przypisanePojazdy.size());
+    oss << "\n  -> Przypisani Pracownicy (" << przypisaniPracownicy.size() << "): ";
+    for (const auto& pracownik : przypisaniPracownicy) {
+        if (pracownik) oss << pracownik->pobierzIdPracownika() << " ";
+    }
+    oss << "\n------------------------------------------------";
 
-    return info;
+    return oss.str();
+}
+
+std::string Zlecenie::serializuj() const {
+    std::ostringstream oss;
+
+    oss << idZlecenia << ";"
+        << czyRozliczone << ";"
+        << wymaganaWaga << ";"
+        << objetosc << ";"
+        << wymaganaKategoria << ";"
+        << okresRealizacji.serializuj() << ";";
+
+    if (klient) {
+        oss << klient->pobierzId() << ";";
+    } else {
+        oss << "BRAK;";
+    }
+
+    oss << przypisanePojazdy.size() << ";";
+    for (const auto& pojazd : przypisanePojazdy) {
+        if (pojazd) oss << pojazd->pobierzNumerRejestracyjny() << ",";
+    }
+    oss << ";";
+
+    oss << przypisaniPracownicy.size() << ";";
+    for (const auto& pracownik : przypisaniPracownicy) {
+        if (pracownik) oss << pracownik->pobierzIdPracownika() << ",";
+    }
+
+    return oss.str();
 }

@@ -24,6 +24,25 @@ public:
     void uruchom();
     void wyswietlMenu();
     void obsluzKreatorZlecenia();
+
+    // Metody obsługujące podmenu
+    void menuDodajZasob();
+    void menuPokazDane();
+
+    // Metody dodawania
+    void dodajPracownika();
+    void dodajPojazd();
+    void dodajKlienta();
+
+    // Nowe metody wyświetlania
+    void pokazZlecenia();
+    void pokazPracownikow();
+    void pokazPojazdy();
+    void pokazKlientow();
+
+    // Metody zapisu i odczytu
+    void zapiszSystem();
+    void wczytajSystem();
 };
 
 #endif //ATOM_PN_1330_06_INTERFEJS_H

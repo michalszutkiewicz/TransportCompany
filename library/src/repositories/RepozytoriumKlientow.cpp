@@ -79,9 +79,39 @@ void RepozytoriumKlientow::wczytajStan(const string& sciezka) {
 }
 
 string RepozytoriumKlientow::serializuj() const {
-    return "SERIALIZOWANE_DANE_KLIENTOW";
+    ostringstream oss;
+    for (const auto& el : elementy) {
+        if (el) {
+            oss << el->serializuj() << "\n";
+        }
+    }
+    return oss.str();
 }
 
 void RepozytoriumKlientow::deserializuj(const string& dane) {
-    // Implementacja deserializacji
+    elementy.clear();
+    stringstream ss(dane);
+    string linia;
+
+    while (getline(ss, linia)) {
+        while (!linia.empty() && (linia.back() == '\r' || linia.back() == '\n')) {
+            linia.pop_back();
+        }
+
+        if (linia.empty()) continue;
+
+        stringstream liniaSs(linia);
+        string id, imie, nazwisko;
+
+        getline(liniaSs, id, ';');
+        getline(liniaSs, imie, ';');
+        getline(liniaSs, nazwisko, ';');
+
+        if (!nazwisko.empty() && nazwisko.back() == '\r') {
+            nazwisko.pop_back();
+        }
+
+        auto nowyKlient = make_shared<Klient>(id, imie, nazwisko);
+        dodajKlienta(nowyKlient);
+    }
 }

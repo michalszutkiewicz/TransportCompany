@@ -9,7 +9,10 @@ Termin::Termin(pt::ptime dataOd, pt::ptime dataDo) : dataOd(dataOd), dataDo(data
 }
 
 bool Termin::czyKoliduje(const Termin &inny) const {
-    // używamy ostrych nierówności, co pozwala na płynne "przekazanie" zasobu,
-    // jeśli inny termin zaczyna się dokładnie w momencie zakończenia obecnego.
     return (this->dataOd < inny.dataDo) && (this->dataDo > inny.dataOd);
+}
+
+std::string Termin::serializuj() const {
+    return boost::posix_time::to_iso_extended_string(dataOd) + ";" +
+           boost::posix_time::to_iso_extended_string(dataDo);
 }

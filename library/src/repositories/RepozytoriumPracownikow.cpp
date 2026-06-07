@@ -3,6 +3,8 @@
 #include <sstream>
 #include <fstream>
 
+#include "Kierowca.h"
+
 using namespace std;
 
 shared_ptr<Pracownik> RepozytoriumPracownikow::pobierzPracownik(const string& id) const {
@@ -36,7 +38,7 @@ string RepozytoriumPracownikow::raport() const {
     ostringstream oss;
     for (const auto& el : elementy) {
         if (el) {
-            oss << "Pracownik: " << el->pobierzPesel() << " Rola: " << el->pobierzRole() << endl;
+            oss << el->pobierzPelneDane() << endl;
         }
     }
     return oss.str();
@@ -79,9 +81,49 @@ void RepozytoriumPracownikow::wczytajStan(const string& sciezka) {
 }
 
 string RepozytoriumPracownikow::serializuj() const {
-    return "SERIALIZOWANE_DANE_PRACOWNIKOW";
+    ostringstream oss;
+    for (const auto& el : elementy) {
+        if (el) {
+            oss << el->serializuj() << "\n";
+        }
+    }
+    return oss.str();
 }
 
 void RepozytoriumPracownikow::deserializuj(const string& dane) {
+    elementy.clear();
+    stringstream ss(dane);
+    string linia;
 
+    while (getline(ss, linia)) {
+        if (linia.empty()) continue;
+
+        stringstream liniaSs(linia);
+        string typ;
+
+        getline(liniaSs, typ, ';');
+
+        if (typ == "KIEROWCA") {
+            string pesel, imieNazwisko, stawkaStr, kategorieStr;
+
+            getline(liniaSs, pesel, ';');
+            getline(liniaSs, imieNazwisko, ';');
+            getline(liniaSs, stawkaStr, ';');
+            getline(liniaSs, kategorieStr, ';');
+
+            double stawka = stod(stawkaStr);
+
+            vector<string> kategorie;
+            stringstream katSs(kategorieStr);
+            string kat;
+            while (getline(katSs, kat, ',')) {
+                if (!kat.empty()) {
+                    kategorie.push_back(kat);
+                }
+            }
+
+            auto nowyKierowca = make_shared<Kierowca>(pesel, imieNazwisko, stawka, kategorie);
+            dodajPracownika(nowyKierowca);
+        }
+    }
 }

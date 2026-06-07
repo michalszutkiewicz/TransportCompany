@@ -82,9 +82,33 @@ void RepozytoriumZlecen::wczytajStan(const string& sciezka) {
 }
 
 string RepozytoriumZlecen::serializuj() const {
-    return "SERIALIZOWANE_DANE_ZLECEN";
+    ostringstream oss;
+    for (const auto& el : elementy) {
+        if (el) {
+            oss << el->serializuj() << "\n";
+        }
+    }
+    return oss.str();
 }
 
 void RepozytoriumZlecen::deserializuj(const string& dane) {
+    elementy.clear();
+    stringstream ss(dane);
+    string linia;
 
+    while (getline(ss, linia)) {
+        if (linia.empty()) continue;
+
+        stringstream liniaSs(linia);
+        string idZlecenia, czyRozliczoneStr, wagaStr, objetoscStr, wymaganaKat;
+        string idKlienta, liczbaPojazdowStr, liczbaPracownikowStr;
+
+        getline(liniaSs, idZlecenia, ';');
+        getline(liniaSs, czyRozliczoneStr, ';');
+        getline(liniaSs, wagaStr, ';');
+        getline(liniaSs, objetoscStr, ';');
+        getline(liniaSs, wymaganaKat, ';');
+        getline(liniaSs, idKlienta, ';');
+
+    }
 }

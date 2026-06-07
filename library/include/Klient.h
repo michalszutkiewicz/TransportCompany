@@ -21,6 +21,8 @@ public:
     std::string pobierzNazwisko() const { return nazwisko; }
     
     std::string pobierzPelneDane() const;
+
+    virtual std::string serializuj() const;
 };
 
 #endif //ATOM_PN_1330_06_KLIENT_H

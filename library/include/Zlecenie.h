@@ -51,6 +51,8 @@ public:
     std::string pobierzWymaganaKategorie() const { return wymaganaKategoria; }
     
     std::string pobierzPodsumowanie() const;
+
+    std::string serializuj() const;
 };
 
 #endif //ATOM_PN_1330_06_ZLECENIE_H

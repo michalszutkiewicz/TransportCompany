@@ -15,6 +15,8 @@ public:
     bool sprawdzLadownosc(double wymaganaWaga, double objetosc) const override;
     std::string pobierzWymaganaKategorie() const override { return "B"; }
     std::string pobierzOpisPojazdu() const override;
+
+    std::string serializuj() const override;
 };
 
 #endif //ATOM_PN_1330_06_BUSDOSTAWCZY_H

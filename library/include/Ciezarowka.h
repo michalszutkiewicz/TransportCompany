@@ -16,6 +16,8 @@ public:
     bool sprawdzLadownosc(double wymaganaWaga, double objetosc) const override;
     std::string pobierzWymaganaKategorie() const override { return "C"; }
     std::string pobierzOpisPojazdu() const override;
+
+    std::string serializuj() const override;
 };
 
 #endif //ATOM_PN_1330_06_CIEZAROWKA_H

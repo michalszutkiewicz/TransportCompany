@@ -16,6 +16,9 @@ public:
     bool czyUmieWykonacZlecenie(const Zlecenie& z) const override;
     bool mozeWykonacPrace(std::string wymaganaKategoria) const override;
     std::string pobierzRole() const override;
+    std::string pobierzPelneDane() const override;
+
+    std::string serializuj() const override;
 };
 
 #endif //ATOM_PN_1330_06_KIEROWCA_H
