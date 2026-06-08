@@ -60,7 +60,7 @@ vector<shared_ptr<Klient>> RepozytoriumKlientow::pobierzWszystkie() const {
     return elementy;
 }
 
-void RepozytoriumKlientow::zapiszStan(const string& sciezka) {
+void RepozytoriumKlientow::zapiszStan(const string& sciezka) const {
     ofstream plik(sciezka);
     if (plik.is_open()) {
         plik << serializuj();

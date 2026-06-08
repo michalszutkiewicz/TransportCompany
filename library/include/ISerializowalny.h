@@ -12,7 +12,7 @@ class ISerializowalny {
 public:
     virtual ~ISerializowalny() = default;
 
-    virtual void zapiszStan(const std::string& sciezka) = 0;
+    virtual void zapiszStan(const std::string& sciezka) const = 0;
     virtual void wczytajStan(const std::string& sciezka) = 0;
 
     // Metody pomocnicze do serializacji danych wewnętrznych

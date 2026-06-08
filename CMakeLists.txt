@@ -3,14 +3,10 @@ project(ATOM_PN_1330_06)
 
 set(CMAKE_CXX_STANDARD 17)
 
-include_directories(library/include)
+find_package(Boost REQUIRED COMPONENTS date_time unit_test_framework)
 
-add_executable(ATOM_PN_1330_06
-        library/main.cpp
-        library/src/Firma.cpp
-        library/src/Interfejs.cpp
+set(LIB_SOURCES
         library/src/Klient.cpp
-        library/src/ObslugaPlikow.cpp
         library/src/Pojazd.cpp
         library/src/Pracownik.cpp
         library/src/TransportEkspresowy.cpp
@@ -27,3 +23,23 @@ add_executable(ATOM_PN_1330_06
         library/src/repositories/RepozytoriumPracownikow.cpp
         library/src/repositories/RepozytoriumZlecen.cpp
 )
+
+add_library(TransportLibrary STATIC ${LIB_SOURCES})
+target_include_directories(TransportLibrary PUBLIC library/include ${Boost_INCLUDE_DIRS})
+target_link_libraries(TransportLibrary PUBLIC Boost::date_time)
+
+add_executable(ATOM_PN_1330_06 library/main.cpp library/src/Interfejs.cpp)
+target_link_libraries(ATOM_PN_1330_06 PRIVATE TransportLibrary)
+
+enable_testing()
+
+add_executable(TransportTests
+        tests/RepozytoriumTests.cpp
+        tests/ZlecenieTests.cpp
+        tests/MenedzerZlecenTests.cpp
+        tests/IntegracjaTests.cpp
+)
+
+target_link_libraries(TransportTests PRIVATE TransportLibrary Boost::date_time Boost::unit_test_framework)
+
+add_test(NAME AllTransportTests COMMAND TransportTests)

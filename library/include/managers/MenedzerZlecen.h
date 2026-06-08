@@ -16,7 +16,6 @@ public:
     // Przechodzimy na shared_ptr dla spójności z klasą Zlecenie
     bool probaPrzypisaniaPojazdu(Zlecenie& z, std::shared_ptr<Pojazd> p);
     bool probaPrzypisaniaPracownika(Zlecenie& z, std::shared_ptr<Pracownik> pr);
-
     bool weryfikujGotowoscDoRealizacji(const Zlecenie& z);
     bool sprawdzUprawnienia(std::shared_ptr<Pracownik> pr, std::shared_ptr<Pojazd> p);
     bool sprawdzDostepnoscZasobow(const Zlecenie& z) const;

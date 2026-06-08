@@ -2,17 +2,15 @@
 // Created by Kinga Ratajska on 15/04/2026.
 //
 
-#include "Interfejs.h"
-#include "managers/MenedzerZlecen.h"
+#include "../include/Interfejs.h"
+#include "../include/managers/MenedzerZlecen.h"
 #include <iostream>
 
-#include "BusDostawczy.h"
-#include "Ciezarowka.h"
-#include "Kierowca.h"
-#include "TransportEkspresowy.h"
-#include "TransportStandardowy.h"
-#include "ObslugaPlikow.h"
-#include "Firma.h"
+#include "../include/BusDostawczy.h"
+#include "../include/Ciezarowka.h"
+#include "../include/Kierowca.h"
+#include "../include/TransportEkspresowy.h"
+#include "../include/TransportStandardowy.h"
 
 using namespace std;
 
@@ -42,10 +40,10 @@ void InterfejsUI::uruchom() {
                 menuPokazDane();
                 break;
             case 4:
-                zapiszSystem();
+                zapiszStanSystemu("dane/");
                 break;
             case 5:
-                wczytajSystem();
+                wczytajStanSystemu("dane/");
                 break;
             case 0:
                 dziala = false;
@@ -447,28 +445,24 @@ void InterfejsUI::dodajKlienta() {
     cout << "[Sukces] Klient " << imie << " " << nazwisko << " (" << idKlienta << ") został pomyślnie dodany do systemu!" << endl;
 }
 
-void InterfejsUI::zapiszSystem() {
-    cout << "\n--- ZAPISYWANIE STANU SYSTEMU ---" << endl;
-    string sciezka = "dane/";
+void InterfejsUI::zapiszStanSystemu(const std::string& sciezka) {
+    std::cout << "\n[Zapis Systemu] Zapisywanie danych do katalogu: " << sciezka << " ..." << std::endl;
 
-    Firma tempFirma;
-    tempFirma.pobierzRepozytoriumKlientow() = repoKlienci;
-    tempFirma.pobierzRepozytoriumPracownikow() = repoPracownicy;
-    tempFirma.pobierzRepozytoriumPojazdow() = repoPojazdy;
-    tempFirma.pobierzRepozytoriumZlecen() = repoZlecenia;
+    repoKlienci.zapiszStan(sciezka + "klienci.txt");
+    repoPracownicy.zapiszStan(sciezka + "pracownicy.txt");
+    repoPojazdy.zapiszStan(sciezka + "pojazdy.txt");
+    repoZlecenia.zapiszStan(sciezka + "zlecenia.txt");
 
-    ObslugaPlikow::zapiszStanSystemu(tempFirma, sciezka);
+    std::cout << "[Zapis Systemu] Zakończono pomyślnie.\n";
 }
 
-// Implementacja odczytu
-void InterfejsUI::wczytajSystem() {
-    cout << "\n--- WCZYTYWANIE STANU SYSTEMU ---" << endl;
-    string sciezka = "dane/";
+void InterfejsUI::wczytajStanSystemu(const std::string& sciezka) {
+    std::cout << "\n[Odczyt Systemu] Wczytywanie danych z katalogu: " << sciezka << " ..." << std::endl;
 
-    Firma zaladowanaFirma = ObslugaPlikow::wczytajStanSystemu(sciezka);
+    repoKlienci.wczytajStan(sciezka + "klienci.txt");
+    repoPracownicy.wczytajStan(sciezka + "pracownicy.txt");
+    repoPojazdy.wczytajStan(sciezka + "pojazdy.txt");
+    repoZlecenia.wczytajStan(sciezka + "zlecenia.txt", repoKlienci, repoPojazdy, repoPracownicy);
 
-    repoKlienci = zaladowanaFirma.pobierzRepozytoriumKlientow();
-    repoPracownicy = zaladowanaFirma.pobierzRepozytoriumPracownikow();
-    repoPojazdy = zaladowanaFirma.pobierzRepozytoriumPojazdow();
-    repoZlecenia = zaladowanaFirma.pobierzRepozytoriumZlecen();
+    std::cout << "[Odczyt Systemu] Zakończono pomyślnie.\n";
 }

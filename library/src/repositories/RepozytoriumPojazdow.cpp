@@ -63,7 +63,7 @@ vector<shared_ptr<Pojazd>> RepozytoriumPojazdow::pobierzWszystkie() const {
     return elementy;
 }
 
-void RepozytoriumPojazdow::zapiszStan(const string& sciezka) {
+void RepozytoriumPojazdow::zapiszStan(const string& sciezka) const{
     ofstream plik(sciezka);
     if (plik.is_open()) {
         plik << serializuj();

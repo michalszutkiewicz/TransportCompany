@@ -49,7 +49,7 @@ public:
     double pobierzWymaganaWage() const { return wymaganaWaga; }
     double pobierzObjetosc() const { return objetosc; }
     std::string pobierzWymaganaKategorie() const { return wymaganaKategoria; }
-    
+    std::string pobierzStatus() const;
     std::string pobierzPodsumowanie() const;
 
     std::string serializuj() const;

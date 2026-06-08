@@ -33,7 +33,7 @@ public:
     std::vector<std::shared_ptr<Pojazd>> pobierzWszystkie() const;
 
     // Implementacja ISerializowalny
-    void zapiszStan(const std::string& sciezka) override;
+    void zapiszStan(const std::string& sciezka) const override;
     void wczytajStan(const std::string& sciezka) override;
     std::string serializuj() const override;
     void deserializuj(const std::string& dane) override;

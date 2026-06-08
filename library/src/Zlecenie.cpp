@@ -37,10 +37,26 @@ Termin Zlecenie::pobierzOkres() const {
     return okresRealizacji;
 }
 
+std::string Zlecenie::pobierzStatus() const {
+    if (czyRozliczone) {
+        return "ROZLICZONE";
+    }
+
+    boost::posix_time::ptime teraz = boost::posix_time::second_clock::local_time();
+
+    if (teraz > okresRealizacji.pobierzCzasDo()) {
+        return "ZAKOŃCZONE (oczekuje na rozliczenie)";
+    } else if (teraz < okresRealizacji.pobierzCzasOd()) {
+        return "OCZEKUJĄCE";
+    } else {
+        return "W TOKU";
+    }
+}
+
 std::string Zlecenie::pobierzPodsumowanie() const {
     std::ostringstream oss;
     oss << "[ZLECENIE " << idZlecenia << "] - Status: "
-        << (czyRozliczone ? "ROZLICZONE" : "W TOKU") << "\n"
+        << pobierzStatus() << "\n"
         << "  -> Klient: " << (klient ? klient->pobierzId() : "BRAK KLIENTA") << "\n"
         << "  -> Ładunek: " << wymaganaWaga << " kg, " << objetosc << " m3 (Wymagana kat: " << wymaganaKategoria << ")\n"
         << "  -> Termin Od: " << boost::posix_time::to_simple_string(okresRealizacji.pobierzCzasOd())

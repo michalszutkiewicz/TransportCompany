@@ -41,8 +41,8 @@ public:
     void pokazKlientow();
 
     // Metody zapisu i odczytu
-    void zapiszSystem();
-    void wczytajSystem();
+    void zapiszStanSystemu(const std::string& sciezka);
+    void wczytajStanSystemu(const std::string& sciezka);
 };
 
 #endif //ATOM_PN_1330_06_INTERFEJS_H

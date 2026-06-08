@@ -13,6 +13,10 @@
 #include <functional>
 #include <string>
 
+class RepozytoriumKlientow;
+class RepozytoriumPojazdow;
+class RepozytoriumPracownikow;
+
 using ZleceniePredykat = std::function<bool(std::shared_ptr<Zlecenie>)>;
 
 class RepozytoriumZlecen : public ISerializowalny {
@@ -33,8 +37,13 @@ public:
     std::vector<std::shared_ptr<Zlecenie>> pobierzWszystkie() const;
 
     // Implementacja ISerializowalny
-    void zapiszStan(const std::string& sciezka) override;
+    void zapiszStan(const std::string& sciezka) const override;
     void wczytajStan(const std::string& sciezka) override;
+    void wczytajStan(const std::string& sciezka,
+                     RepozytoriumKlientow& rKlienci,
+                     RepozytoriumPojazdow& rPojazdy,
+                     RepozytoriumPracownikow& rPracownicy);
+
     std::string serializuj() const override;
     void deserializuj(const std::string& dane) override;
 };

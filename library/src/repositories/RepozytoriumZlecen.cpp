@@ -1,14 +1,16 @@
-#include "repositories/RepozytoriumZlecen.h"
-#include <algorithm>
-#include <sstream>
+#include "../../include/repositories/RepozytoriumZlecen.h"
+#include "../../include/repositories/RepozytoriumKlientow.h"
+#include "../../include/repositories/RepozytoriumPojazdow.h"
+#include "../../include/repositories/RepozytoriumPracownikow.h"
+#include "../../include/TransportStandardowy.h"
 #include <fstream>
+#include <sstream>
+#include <iostream>
+#include <algorithm> // Dodane dla std::remove w usunZlecenie
 
 using namespace std;
 
 shared_ptr<Zlecenie> RepozytoriumZlecen::pobierzZlecenie(const string& id) const {
-    // Zakładając że Zlecenie ma metodę pobierzId() - sprawdzę to w Zlecenie.h
-    // Wcześniej widziałem idZlecenia w Zlecenie.h, ale nie widziałem gettera.
-    // Dopiszę getter jeśli brakuje.
     for (const auto& el : elementy) {
         if (el && el->pobierzId() == id) {
             return el;
@@ -63,20 +65,10 @@ vector<shared_ptr<Zlecenie>> RepozytoriumZlecen::pobierzWszystkie() const {
     return elementy;
 }
 
-void RepozytoriumZlecen::zapiszStan(const string& sciezka) {
+void RepozytoriumZlecen::zapiszStan(const string& sciezka) const {
     ofstream plik(sciezka);
     if (plik.is_open()) {
         plik << serializuj();
-        plik.close();
-    }
-}
-
-void RepozytoriumZlecen::wczytajStan(const string& sciezka) {
-    ifstream plik(sciezka);
-    if (plik.is_open()) {
-        stringstream buffer;
-        buffer << plik.rdbuf();
-        deserializuj(buffer.str());
         plik.close();
     }
 }
@@ -91,24 +83,86 @@ string RepozytoriumZlecen::serializuj() const {
     return oss.str();
 }
 
-void RepozytoriumZlecen::deserializuj(const string& dane) {
-    elementy.clear();
-    stringstream ss(dane);
-    string linia;
+void RepozytoriumZlecen::wczytajStan(const string& sciezka) {
+    // Nie używamy tej wersji dla Zleceń
+}
 
-    while (getline(ss, linia)) {
+void RepozytoriumZlecen::deserializuj(const string& dane) {
+    // Nie używamy tej wersji dla Zleceń
+}
+
+
+void RepozytoriumZlecen::wczytajStan(const std::string& sciezka,
+                                     RepozytoriumKlientow& rKlienci,
+                                     RepozytoriumPojazdow& rPojazdy,
+                                     RepozytoriumPracownikow& rPracownicy) {
+
+    std::ifstream plikZlecen(sciezka);
+    if (!plikZlecen.is_open()) {
+        std::cerr << "Nie udalo sie otworzyc pliku: " << sciezka << std::endl;
+        return;
+    }
+
+    elementy.clear();
+
+    std::string linia;
+    while (std::getline(plikZlecen, linia)) {
+        while (!linia.empty() && (linia.back() == '\r' || linia.back() == '\n')) {
+            linia.pop_back();
+        }
         if (linia.empty()) continue;
 
-        stringstream liniaSs(linia);
-        string idZlecenia, czyRozliczoneStr, wagaStr, objetoscStr, wymaganaKat;
-        string idKlienta, liczbaPojazdowStr, liczbaPracownikowStr;
+        std::stringstream liniaSs(linia);
+        std::string idZlecenia, czyRozliczoneStr, wagaStr, objetoscStr, wymaganaKat;
+        std::string dataOdStr, dataDoStr, idKlienta, liczbaPojazdowStr, listaPojazdowStr, liczbaPracownikowStr, listaPracownikowStr;
 
-        getline(liniaSs, idZlecenia, ';');
-        getline(liniaSs, czyRozliczoneStr, ';');
-        getline(liniaSs, wagaStr, ';');
-        getline(liniaSs, objetoscStr, ';');
-        getline(liniaSs, wymaganaKat, ';');
-        getline(liniaSs, idKlienta, ';');
+        std::getline(liniaSs, idZlecenia, ';');
+        std::getline(liniaSs, czyRozliczoneStr, ';');
+        std::getline(liniaSs, wagaStr, ';');
+        std::getline(liniaSs, objetoscStr, ';');
+        std::getline(liniaSs, wymaganaKat, ';');
+        std::getline(liniaSs, dataOdStr, ';');
+        std::getline(liniaSs, dataDoStr, ';');
+        std::getline(liniaSs, idKlienta, ';');
+        std::getline(liniaSs, liczbaPojazdowStr, ';');
+        std::getline(liniaSs, listaPojazdowStr, ';');
+        std::getline(liniaSs, liczbaPracownikowStr, ';');
+        std::getline(liniaSs, listaPracownikowStr, ';');
 
+        double waga = std::stod(wagaStr);
+        double objetosc = std::stod(objetoscStr);
+        bool czyRozl = (czyRozliczoneStr == "1");
+
+        namespace pt = boost::posix_time;
+        pt::ptime czasOd = pt::from_iso_extended_string(dataOdStr);
+        pt::ptime czasDo = pt::from_iso_extended_string(dataDoStr);
+        Termin terminZlecenia(czasOd, czasDo);
+
+        auto klient = rKlienci.pobierzKlienta(idKlienta);
+        auto usluga = std::make_shared<TransportStandardowy>("Usluga " + idZlecenia, 100.0, 3.5);
+        auto noweZlecenie = std::make_shared<Zlecenie>(idZlecenia, terminZlecenia, klient, usluga, waga, objetosc, wymaganaKat);
+
+        std::stringstream pojazdySs(listaPojazdowStr);
+        std::string idPojazdu;
+        while (std::getline(pojazdySs, idPojazdu, ',')) {
+            if (!idPojazdu.empty()) {
+                auto pojazd = rPojazdy.pobierzPojazd(idPojazdu);
+                if (pojazd) noweZlecenie->dodajPojazd(pojazd);
+            }
+        }
+
+        std::stringstream pracownicySs(listaPracownikowStr);
+        std::string idPracownika;
+        while (std::getline(pracownicySs, idPracownika, ',')) {
+            if (!idPracownika.empty()) {
+                auto pracownik = rPracownicy.pobierzPracownik(idPracownika);
+                if (pracownik) noweZlecenie->dodajPracownika(pracownik);
+            }
+        }
+
+        if (czyRozl) noweZlecenie->rozlicz();
+
+        dodajZlecenie(noweZlecenie);
     }
+    plikZlecen.close();
 }

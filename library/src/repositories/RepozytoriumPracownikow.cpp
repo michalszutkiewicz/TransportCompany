@@ -62,7 +62,7 @@ vector<shared_ptr<Pracownik>> RepozytoriumPracownikow::pobierzWszystkie() const 
     return elementy;
 }
 
-void RepozytoriumPracownikow::zapiszStan(const string& sciezka) {
+void RepozytoriumPracownikow::zapiszStan(const string& sciezka) const{
     ofstream plik(sciezka);
     if (plik.is_open()) {
         plik << serializuj();
