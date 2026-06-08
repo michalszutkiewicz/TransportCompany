@@ -14,6 +14,7 @@
 #include "Ciezarowka.h"
 #include "Kierowca.h"
 #include "Termin.h"
+#include "Exceptions.h"
 
 /**
  * @brief Testuje proces przypisywania zasobów do zlecenia.
@@ -23,7 +24,7 @@
  * - Logikę uprawnień (kierowca musi posiadać odpowiednią kategorię dla przypisanego pojazdu).
  */
 BOOST_AUTO_TEST_CASE(PrzypisanieZasobowTest) {
-    MenedzerZlecen menedzer;
+   MenedzerZlecen menedzer;
     pt::ptime d1(gr::date(2026, 6, 10), pt::hours(10));
     pt::ptime d2(gr::date(2026, 6, 10), pt::hours(14));
     Termin t(d1, d2);
@@ -35,23 +36,26 @@ BOOST_AUTO_TEST_CASE(PrzypisanieZasobowTest) {
     auto kierowcaB = std::make_shared<Kierowca>("1", "Kierowca B", 30.0, std::vector<std::string>{"B"});
     auto kierowcaC = std::make_shared<Kierowca>("2", "Kierowca C", 40.0, std::vector<std::string>{"C"});
 
-    // Poprawne przypisanie pojazdu
-    BOOST_CHECK(menedzer.probaPrzypisaniaPojazdu(zlecenie, pojazd) == true);
-    
-    // Próba przypisania tego samego pojazdu do innego zlecenia (kolizja)
+    // Poprawne przypisanie pojazdu (nie rzuca wyjątku)
+    BOOST_CHECK_NO_THROW(menedzer.probaPrzypisaniaPojazdu(zlecenie, pojazd));
+
+    // Próba przypisania tego samego pojazdu do innego zlecenia (kolizja czasowa)
     Zlecenie zlecenie2("Z2", t, klient, usluga, 50.0, 1.0, "B");
-    BOOST_CHECK(menedzer.probaPrzypisaniaPojazdu(zlecenie2, pojazd) == false);
+    BOOST_CHECK_THROW(menedzer.probaPrzypisaniaPojazdu(zlecenie2, pojazd), ResourceUnavailableException);
 
     // Przypisanie pracownika z odpowiednimi uprawnieniami
-    BOOST_CHECK(menedzer.probaPrzypisaniaPracownika(zlecenie, kierowcaB) == true);
+    BOOST_CHECK_NO_THROW(menedzer.probaPrzypisaniaPracownika(zlecenie, kierowcaB));
 
-    // Weryfikacja sprawdzania uprawnień (kierowca C nie posiada kategorii B)
-    Zlecenie zlecenie3("Z3", t, klient, usluga, 1000.0, 20.0, "C");
+    // Weryfikacja sprawdzania uprawnień wprost na metodzie
     auto ciezarowka = std::make_shared<Ciezarowka>("EL99999", 100.0, 20.0, true);
-    menedzer.probaPrzypisaniaPojazdu(zlecenie3, ciezarowka);
-
     BOOST_CHECK(menedzer.sprawdzUprawnienia(kierowcaC, ciezarowka) == true);
     BOOST_CHECK(menedzer.sprawdzUprawnienia(kierowcaB, ciezarowka) == false);
+
+    // Testowanie rzucania PermissionDeniedException
+    Zlecenie zlecenie3("Z3", t, klient, usluga, 1000.0, 20.0, "C");
+    zlecenie3.dodajPracownika(kierowcaB);
+    // Próba przypisania ciężarówki (wymaga kat. "C"), żaden pracownik zlecenia nie ma uprawnień:
+    BOOST_CHECK_THROW(menedzer.probaPrzypisaniaPojazdu(zlecenie3, ciezarowka), PermissionDeniedException);
 }
 
 /**

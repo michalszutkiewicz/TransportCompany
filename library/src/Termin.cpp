@@ -4,6 +4,7 @@
  */
 
 #include "../include/Termin.h"
+#include "../include/Exceptions.h"
 #include <stdexcept>
 
 /**
@@ -11,12 +12,12 @@
  * * Weryfikuje spójność przedziału czasowego.
  * @param dataOd Czas rozpoczęcia terminu.
  * @param dataDo Czas zakończenia terminu.
- * @throw std::invalid_argument Jeśli dataOd jest późniejsza niż dataDo.
+ * @throw InvalidTermException Jeśli dataOd jest późniejsza niż dataDo.
  */
 Termin::Termin(pt::ptime dataOd, pt::ptime dataDo) : dataOd(dataOd), dataDo(dataDo) {
     // data początkowa nie może być późniejsza niż data końcowa.
     if (this->dataOd > this->dataDo) {
-        throw std::invalid_argument("Data poczatkowa nie moze byc pozniejsza niz data koncowa!");
+        throw InvalidTermException("Data poczatkowa nie moze byc pozniejsza niz data koncowa!");
     }
 }
 

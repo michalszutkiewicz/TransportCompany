@@ -22,6 +22,7 @@ set(LIB_SOURCES
         library/src/repositories/RepozytoriumKlientow.cpp
         library/src/repositories/RepozytoriumPracownikow.cpp
         library/src/repositories/RepozytoriumZlecen.cpp
+        library/include/Exceptions.h
 )
 
 add_library(TransportLibrary STATIC ${LIB_SOURCES})

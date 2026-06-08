@@ -8,6 +8,7 @@
 #include "../include/Pojazd.h"
 #include "../include/Pracownik.h"
 #include "../include/Termin.h"
+#include "../include/Exceptions.h"
 
 /**
  * @brief Próbuje przypisać pojazd do zlecenia.
@@ -19,12 +20,12 @@
  */
 bool MenedzerZlecen::probaPrzypisaniaPojazdu(Zlecenie& z, std::shared_ptr<Pojazd> p) {
     if (!p) {
-        return false;
+        throw std::invalid_argument("Wskaznik na pojazd nie moze byc pusty (nullptr).");
     }
 
     // 1. Weryfikujemy dostępność czasową pojazdu
     if (!p->czyDostepny(z.pobierzOkres())) {
-        return false;
+        throw ResourceUnavailableException("Wybrany pojazd jest zajety w wymaganym okresie zlecenia.");
     }
 
     // 2. Weryfikujemy czy przypisani pracownicy (kierowcy) mogą prowadzić ten pojazd
@@ -38,7 +39,7 @@ bool MenedzerZlecen::probaPrzypisaniaPojazdu(Zlecenie& z, std::shared_ptr<Pojazd
             }
         }
         if (!ktosMozeProwadzic) {
-            return false;
+            throw PermissionDeniedException("Zaden z przypisanych pracownikow nie posiada uprawnien do prowadzenia tego pojazdu.");
         }
     }
 
@@ -56,12 +57,12 @@ bool MenedzerZlecen::probaPrzypisaniaPojazdu(Zlecenie& z, std::shared_ptr<Pojazd
  */
 bool MenedzerZlecen::probaPrzypisaniaPracownika(Zlecenie& z, std::shared_ptr<Pracownik> pr) {
     if (!pr) {
-        return false;
+        throw std::invalid_argument("Wskaznik na pracownika nie moze byc pusty (nullptr).");
     }
 
     // 1. Weryfikujemy dostępność czasową pracownika
     if (!pr->czyDostepny(z.pobierzOkres())) {
-        return false;
+        throw ResourceUnavailableException("Wybrany pracownik ma juz przypisane inne obowiazki w tym czasie.");
     }
 
     // 2. Weryfikujemy uprawnienia względem już przypisanych pojazdów
@@ -76,7 +77,7 @@ bool MenedzerZlecen::probaPrzypisaniaPracownika(Zlecenie& z, std::shared_ptr<Pra
         }
 
         if (!mozeObsluzycJakis) {
-            return false;
+            throw PermissionDeniedException("Pracownik nie posiada uprawnien do obslugi zadnego z przypisanych pojazdow.");
         }
     }
 

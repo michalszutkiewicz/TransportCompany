@@ -14,6 +14,7 @@
 #include "BusDostawczy.h"
 #include "Kierowca.h"
 #include "Termin.h"
+#include "Exceptions.h"
 
 /**
  * @brief Scenariusz pełnego cyklu życia zlecenia.
@@ -76,7 +77,6 @@ BOOST_AUTO_TEST_CASE(ScenariuszNiepowodzeniaTest) {
     // Pierwsze przypisanie poprawne
     menedzer.probaPrzypisaniaPojazdu(z1, pojazd);
     
-    // Próba przypisania tego samego pojazdu do z2 (kolizja w czasie)
-    bool fail = menedzer.probaPrzypisaniaPojazdu(z2, pojazd);
-    BOOST_CHECK(fail == false);
+    // Sprawdzenie wyrzucenia wyjątku dla kolizji czasowej
+    BOOST_CHECK_THROW(menedzer.probaPrzypisaniaPojazdu(z2, pojazd), ResourceUnavailableException);
 }
