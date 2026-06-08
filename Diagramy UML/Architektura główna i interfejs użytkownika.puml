@@ -1,0 +1,63 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+package "Warstwa Prezentacji" {
+    class InterfejsUI {
+        - repoKlienci: RepozytoriumKlientow
+        - repoPojazdy: RepozytoriumPojazdow
+        - repoPracownicy: RepozytoriumPracownikow
+        - repoZlecenia: RepozytoriumZlecen
+        + uruchom(): void
+        + wyswietlMenu(): void
+        + obsluzKreatorZlecenia(): void
+    }
+}
+
+package "Warstwa Składowania Danych" {
+    interface ISerializowalny {
+        + {abstract} zapiszStan(sciezka: const string&): void
+        + {abstract} wczytajStan(sciezka: const string&): void
+    }
+}
+
+package "Warstwa Logiki Biznesowej" {
+    class RepozytoriumKlientow {
+        - klienci: std::map<string, std::shared_ptr<Klient>>
+        + dodajKlienta(k: std::shared_ptr<Klient>): void
+        + zapiszStan(sciezka: const string&): void
+        + wczytajStan(sciezka: const string&): void
+    }
+
+    class RepozytoriumPojazdow {
+        - pojazdy: std::map<string, std::shared_ptr<Pojazd>>
+        + dodajPojazd(p: std::shared_ptr<Pojazd>): void
+        + zapiszStan(sciezka: const string&): void
+        + wczytajStan(sciezka: const string&): void
+    }
+
+    class RepozytoriumPracownikow {
+        - pracownicy: std::map<string, std::shared_ptr<Pracownik>>
+        + dodajPracownika(p: std::shared_ptr<Pracownik>): void
+        + zapiszStan(sciezka: const string&): void
+        + wczytajStan(sciezka: const string&): void
+    }
+
+    class RepozytoriumZlecen {
+        - zlecenia: std::vector<std::shared_ptr<Zlecenie>>
+        + dodajZlecenie(z: std::shared_ptr<Zlecenie>): void
+        + zapiszStan(sciezka: const string&): void
+        + wczytajStan(sciezka: const string&): void
+    }
+}
+
+ISerializowalny <|.. RepozytoriumKlientow
+ISerializowalny <|.. RepozytoriumPojazdow
+ISerializowalny <|.. RepozytoriumPracownikow
+ISerializowalny <|.. RepozytoriumZlecen
+
+InterfejsUI *-- RepozytoriumKlientow
+InterfejsUI *-- RepozytoriumPojazdow
+InterfejsUI *-- RepozytoriumPracownikow
+InterfejsUI *-- RepozytoriumZlecen
+@enduml

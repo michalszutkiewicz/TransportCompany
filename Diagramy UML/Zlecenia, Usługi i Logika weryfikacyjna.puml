@@ -1,0 +1,57 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "Realizacja Biznesowa" {
+    class MenedzerZlecen {
+        + probaPrzypisaniaPojazdu(z: Zlecenie&, p: std::shared_ptr<Pojazd>): bool
+        + probaPrzypisaniaPracownika(z: Zlecenie&, pr: std::shared_ptr<Pracownik>): bool
+        + weryfikujGotowoscDoRealizacji(z: const Zlecenie&): bool
+        + sprawdzUprawnienia(pr: std::shared_ptr<Pracownik>, p: std::shared_ptr<Pojazd>): bool
+        + sprawdzDostepnoscZasobow(z: const Zlecenie&): bool const
+    }
+
+    class Zlecenie {
+        - idZlecenia: string
+        - okresRealizacji: Termin
+        - czyRozliczone: bool
+        - wymaganaWaga: double
+        - objetosc: double
+        - wymaganaKategoria: string
+        - klient: std::shared_ptr<Klient>
+        - usluga: std::shared_ptr<Usluga>
+        - przypisanePojazdy: std::vector<std::shared_ptr<Pojazd>>
+        - przypisaniPracownicy: std::vector<std::shared_ptr<Pracownik>>
+        + Zlecenie(id: string, okres: Termin, k: std::shared_ptr<Klient>, u: std::shared_ptr<Usluga>, waga: double, obj: double, kat: string)
+        + dodajPojazd(p: std::shared_ptr<Pojazd>): void
+        + dodajPracownika(pr: std::shared_ptr<Pracownik>): void
+        + obliczPelnyKoszt(): double const
+        + rozlicz(): void
+        + serializuj(): string const
+    }
+}
+
+package "Hierarchia Uslug (Wzorzec Strategii)" {
+    abstract class Usluga {
+        - nazwaZlecenia: string
+        - dystans: double
+        + {abstract} obliczKoszt(): double const
+    }
+
+    class TransportStandardowy {
+        - stawkaZaKm: double
+        + obliczKoszt(): double const
+    }
+
+    class TransportEkspresowy {
+        - oplataStala: double
+        - stawkaZaKm: double
+        + obliczKoszt(): double const
+    }
+
+    Usluga <|-- TransportStandardowy
+    Usluga <|-- TransportEkspresowy
+}
+
+Zlecenie "1" *-- "1" Usluga
+MenedzerZlecen ..> Zlecenie : zarządza
+@enduml

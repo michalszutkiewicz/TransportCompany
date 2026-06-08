@@ -1,0 +1,3 @@
+KL001;Firma;Pol-Trans
+KL002;Jan;Kowalski
+KL003;Anna;Nowak

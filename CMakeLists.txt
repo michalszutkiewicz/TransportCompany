@@ -43,3 +43,5 @@ add_executable(TransportTests
 target_link_libraries(TransportTests PRIVATE TransportLibrary Boost::date_time Boost::unit_test_framework)
 
 add_test(NAME AllTransportTests COMMAND TransportTests)
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dane DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

@@ -6,7 +6,6 @@
  */
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/unit_test.hpp>
 #include "managers/MenedzerZlecen.h"
 #include "Zlecenie.h"
 #include "Klient.h"

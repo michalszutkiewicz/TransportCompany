@@ -6,7 +6,8 @@
  * w zależności od czasu.
  */
 
-#include <boost/test/unit_test.hpp>
+#define BOOST_TEST_MODULE TransportTests
+#include <boost/test/included/unit_test.hpp>
 #include "Zlecenie.h"
 #include "Klient.h"
 #include "TransportStandardowy.h"

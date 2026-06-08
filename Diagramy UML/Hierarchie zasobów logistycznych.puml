@@ -1,0 +1,51 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Termin {
+    - dataOd: boost::posix_time::ptime
+    - dataDo: boost::posix_time::ptime
+    + Termin(dataOd: boost::posix_time::ptime, dataDo: boost::posix_time::ptime)
+    + czyKoliduje(inny: const Termin&): bool const
+    + serializuj(): string const
+}
+
+package "Hierarchia 1: Pojazdy (Polimorfizm)" {
+    abstract class Pojazd {
+        - nrRejestracyjny: string
+        - kosztAmortyzacji: double
+        + czyDostepny(okres: Termin): bool
+        + zarezerwujTermin(okres: Termin): void
+    }
+
+    class Ciezarowka {
+        - maksLadownoscTony: double
+        - wymagaNaczepy: bool
+    }
+
+    class BusDostawczy {
+        - pojemnoscM3: double
+    }
+
+    Pojazd <|-- Ciezarowka
+    Pojazd <|-- BusDostawczy
+}
+
+package "Hierarchia 2: Pracownicy (Polimorfizm)" {
+    abstract class Pracownik {
+        - pesel: string
+        - imieNazwisko: string
+        - stawkaGodzinowa: double
+        + czyDostepny(okres: Termin): bool
+        + mozeWykonacPrace(wymaganaKat: string): bool
+        + zarezerwujTermin(okres: Termin): void
+    }
+
+    class Kierowca {
+        - kategoriePrawaJazdy: std::vector<std::string>
+    }
+
+    Pracownik <|-- Kierowca
+}
+
+Zlecenie "1" *-- "1" Termin
+@enduml
