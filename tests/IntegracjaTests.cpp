@@ -1,6 +1,9 @@
-//
-// Created by MichalSw11 on 08.06.2026.
-//
+/**
+* @file IntegracjaTests.cpp
+ * @brief Testy integracyjne systemu zarządzania transportem.
+ * * Testy sprawdzają poprawność współpracy między MenedzeremZlecen,
+ * Repozytoriami, Zleceniami oraz klasami zasobów (Pojazd, Pracownik).
+ */
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/unit_test.hpp>
@@ -13,10 +16,15 @@
 #include "Kierowca.h"
 #include "Termin.h"
 
+/**
+ * @brief Scenariusz pełnego cyklu życia zlecenia.
+ * * Weryfikuje poprawne przypisanie zasobów, walidację gotowości
+ * do realizacji oraz proces rozliczenia zlecenia.
+ */
 BOOST_AUTO_TEST_CASE(ScenariuszPelnyTest) {
     MenedzerZlecen menedzer;
     
-    // 1. Utworzenie obiektów
+    // Inicjalizacja terminów i zasobów
     pt::ptime d1(gr::date(2026, 6, 10), pt::hours(10));
     pt::ptime d2(gr::date(2026, 6, 10), pt::hours(14));
     Termin t(d1, d2);
@@ -26,27 +34,32 @@ BOOST_AUTO_TEST_CASE(ScenariuszPelnyTest) {
     auto pracownik = std::make_shared<Kierowca>("P1", "Adam Nowak", 30.0, std::vector<std::string>{"B"});
     auto usluga = std::make_shared<TransportStandardowy>("Standard", 100.0, 5.0);
 
-    // 2. Utworzenie zlecenia
+    // Utworzenie zlecenia
     Zlecenie zlecenie("Z1", t, klient, usluga, 100.0, 2.0, "B");
 
-    // 3. Użycie MenedzerZlecen do przypisania
+    // Przypisanie zasobów przez menedżera
     bool pOk = menedzer.probaPrzypisaniaPojazdu(zlecenie, pojazd);
     bool prOk = menedzer.probaPrzypisaniaPracownika(zlecenie, pracownik);
     
     BOOST_CHECK(pOk);
     BOOST_CHECK(prOk);
 
-    // 4. Weryfikacja gotowości
+    // Weryfikacja gotowości
     BOOST_CHECK(menedzer.weryfikujGotowoscDoRealizacji(zlecenie));
 
-    // 5. Rozliczenie
+    // Rozliczenie i sprawdzenie statusu
     zlecenie.rozlicz();
     BOOST_CHECK(zlecenie.czyJestRozliczone());
     
-    // Status po rozliczeniu
+    // Weryfikacja: Rozliczone zlecenie nie powinno być ponownie "gotowe do realizacji"
     BOOST_CHECK(menedzer.weryfikujGotowoscDoRealizacji(zlecenie) == false);
 }
 
+/**
+ * @brief Scenariusz niepowodzenia przypisania zasobu (kolizja terminów).
+ * * Weryfikuje, czy menedżer poprawnie blokuje przypisanie pojazdu,
+ * który jest już zajęty w danym terminie przez inne zlecenie.
+ */
 BOOST_AUTO_TEST_CASE(ScenariuszNiepowodzeniaTest) {
     MenedzerZlecen menedzer;
     
@@ -61,10 +74,10 @@ BOOST_AUTO_TEST_CASE(ScenariuszNiepowodzeniaTest) {
     Zlecenie z1("Z1", t, klient, usluga, 100.0, 2.0, "B");
     Zlecenie z2("Z2", t, klient, usluga, 100.0, 2.0, "B");
 
-    // Przypisanie pojazdu do z1
+    // Pierwsze przypisanie poprawne
     menedzer.probaPrzypisaniaPojazdu(z1, pojazd);
     
-    // Próba przypisania tego samego pojazdu do z2 w tym samym terminie
+    // Próba przypisania tego samego pojazdu do z2 (kolizja w czasie)
     bool fail = menedzer.probaPrzypisaniaPojazdu(z2, pojazd);
     BOOST_CHECK(fail == false);
 }

@@ -2,6 +2,10 @@
 // Created by Kinga Ratajska on 15/04/2026.
 //
 
+/**
+ * @file Interfejs.cpp
+ * @brief Implementacja klasy InterfejsUI obsługującej interakcję z użytkownikiem.
+ */
 #include "../include/Interfejs.h"
 #include "../include/managers/MenedzerZlecen.h"
 #include <iostream>
@@ -12,12 +16,26 @@
 #include "../include/TransportEkspresowy.h"
 #include "../include/TransportStandardowy.h"
 
+/**
+ * @class InterfejsUI
+ * @brief Klasa odpowiedzialna za obsługę interfejsu tekstowego (CLI).
+ * * Zarządza pętlą główną programu, wyświetla menu oraz pośredniczy w
+ * komunikacji między użytkownikiem a menedżerem zleceń i repozytoriami.
+ */
+
 using namespace std;
 
+/**
+ * @brief Konstruktor obiektu InterfejsUI.
+ */
 InterfejsUI::InterfejsUI() {
     // Konstruktor może inicjować repozytoria lub ładować je z pliku
 }
 
+/**
+ * @brief Uruchamia główną pętlę programu.
+ * * Obsługuje wybór opcji menu przez użytkownika i wywołuje odpowiednie metody.
+ */
 void InterfejsUI::uruchom() {
     bool dziala = true;
     while (dziala) {
@@ -54,6 +72,9 @@ void InterfejsUI::uruchom() {
     }
 }
 
+/**
+ * @brief Wyświetla dostępne opcje w menu głównym.
+ */
 void InterfejsUI::wyswietlMenu() {
     cout << "\n--- MENU GŁÓWNE ---" << endl;
     cout << "1. Kreator Zlecenia" << endl;
@@ -65,7 +86,9 @@ void InterfejsUI::wyswietlMenu() {
     cout << "Wybierz opcję: ";
 }
 
-// --- PODMENU DODAWANIA ZASOBÓW ---
+/**
+ * @brief Wyświetla podmenu do dodawania zasobów (Pracownik, Pojazd, Klient).
+ */
 void InterfejsUI::menuDodajZasob() {
     bool wPodmenu = true;
     while (wPodmenu) {
@@ -102,7 +125,9 @@ void InterfejsUI::menuDodajZasob() {
     }
 }
 
-// --- PODMENU WYŚWIETLANIA DANYCH ---
+/**
+ * @brief Wyświetla podmenu do prezentacji danych z repozytoriów.
+ */
 void InterfejsUI::menuPokazDane() {
     bool wPodmenu = true;
     while (wPodmenu) {
@@ -143,8 +168,9 @@ void InterfejsUI::menuPokazDane() {
     }
 }
 
-// --- METODY WYKORZYSTUJĄCE LOGIKĘ REPOZYTORIÓW DO WYŚWIETLANIA ---
-
+/**
+ * @brief Wyświetla raport zleceń z repozytorium.
+ */
 void InterfejsUI::pokazZlecenia() {
     cout << "\n=== LISTA ZLECEŃ ===" << endl;
     if (repoZlecenia.rozmiar() == 0) {
@@ -155,6 +181,9 @@ void InterfejsUI::pokazZlecenia() {
     cout << "====================" << endl;
 }
 
+/**
+ * @brief Wyświetla listę pracowników z repozytorium.
+ */
 void InterfejsUI::pokazPracownikow() {
     cout << "\n=== LISTA PRACOWNIKÓW ===" << endl;
     if (repoPracownicy.rozmiar() == 0) {
@@ -165,6 +194,9 @@ void InterfejsUI::pokazPracownikow() {
     cout << "=========================" << endl;
 }
 
+/**
+ * @brief Wyświetla listę pojazdów z repozytorium.
+ */
 void InterfejsUI::pokazPojazdy() {
     cout << "\n=== LISTA POJAZDÓW ===" << endl;
     if (repoPojazdy.rozmiar() == 0) {
@@ -175,6 +207,9 @@ void InterfejsUI::pokazPojazdy() {
     cout << "======================" << endl;
 }
 
+/**
+ * @brief Wyświetla listę klientów z repozytorium.
+ */
 void InterfejsUI::pokazKlientow() {
     cout << "\n=== LISTA KLIENTÓW ===" << endl;
     if (repoKlienci.rozmiar() == 0) {
@@ -185,6 +220,11 @@ void InterfejsUI::pokazKlientow() {
     cout << "======================" << endl;
 }
 
+/**
+ * @brief Interaktywny kreator nowego zlecenia transportowego.
+ * * Pobiera dane od użytkownika, dobiera zasoby przy pomocy MenedzeraZlecen
+ * i zapisuje finalne zlecenie do repozytorium.
+ */
 void InterfejsUI::obsluzKreatorZlecenia() {
     cout << "\n--- KREATOR ZLECENIA ---" << endl;
 
@@ -325,6 +365,9 @@ void InterfejsUI::obsluzKreatorZlecenia() {
     }
 }
 
+/**
+ * @brief Formularz dodawania nowego pracownika (kierowcy) do systemu.
+ */
 void InterfejsUI::dodajPracownika() {
     cout << "\n--- DODAWANIE PRACOWNIKA (KIEROWCY) ---" << endl;
     string pesel, imie, nazwisko, imieNazwisko;
@@ -368,6 +411,9 @@ void InterfejsUI::dodajPracownika() {
     cout << "[Sukces] Pracownik " << imieNazwisko << " został pomyślnie dodany do repozytorium!" << endl;
 }
 
+/**
+ * @brief Formularz dodawania nowego pojazdu (Bus lub Ciężarówka) do systemu.
+ */
 void InterfejsUI::dodajPojazd() {
     cout << "\n--- DODAWANIE POJAZDU ---" << endl;
 
@@ -426,6 +472,9 @@ void InterfejsUI::dodajPojazd() {
     }
 }
 
+/**
+ * @brief Formularz dodawania nowego klienta do systemu.
+ */
 void InterfejsUI::dodajKlienta() {
     cout << "\n--- DODAWANIE KLIENTA ---" << endl;
     string idKlienta, imie, nazwisko;
@@ -445,6 +494,10 @@ void InterfejsUI::dodajKlienta() {
     cout << "[Sukces] Klient " << imie << " " << nazwisko << " (" << idKlienta << ") został pomyślnie dodany do systemu!" << endl;
 }
 
+/**
+ * @brief Zapisuje stan całego systemu do plików tekstowych w wybranym katalogu.
+ * @param sciezka Katalog docelowy zapisu.
+ */
 void InterfejsUI::zapiszStanSystemu(const std::string& sciezka) {
     std::cout << "\n[Zapis Systemu] Zapisywanie danych do katalogu: " << sciezka << " ..." << std::endl;
 
@@ -456,6 +509,10 @@ void InterfejsUI::zapiszStanSystemu(const std::string& sciezka) {
     std::cout << "[Zapis Systemu] Zakończono pomyślnie.\n";
 }
 
+/**
+ * @brief Wczytuje stan całego systemu z plików tekstowych w wybranym katalogu.
+ * @param sciezka Katalog źródłowy odczytu.
+ */
 void InterfejsUI::wczytajStanSystemu(const std::string& sciezka) {
     std::cout << "\n[Odczyt Systemu] Wczytywanie danych z katalogu: " << sciezka << " ..." << std::endl;
 

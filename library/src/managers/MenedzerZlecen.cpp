@@ -1,9 +1,22 @@
+/**
+* @file MenedzerZlecen.cpp
+ * @brief Implementacja logiki biznesowej zarządzania zleceniami i zasobami.
+ */
+
 #include "../include/managers/MenedzerZlecen.h"
 #include "../include/Zlecenie.h"
 #include "../include/Pojazd.h"
 #include "../include/Pracownik.h"
 #include "../include/Termin.h"
 
+/**
+ * @brief Próbuje przypisać pojazd do zlecenia.
+ * * Weryfikuje dostępność czasową pojazdu oraz sprawdza, czy co najmniej jeden
+ * z już przypisanych pracowników posiada uprawnienia do prowadzenia tego pojazdu.
+ * @param z Zlecenie, do którego przypisujemy pojazd.
+ * @param p Wskaźnik na pojazd.
+ * @return true jeśli przypisanie zakończyło się sukcesem, false w przeciwnym razie.
+ */
 bool MenedzerZlecen::probaPrzypisaniaPojazdu(Zlecenie& z, std::shared_ptr<Pojazd> p) {
     if (!p) {
         return false;
@@ -33,6 +46,14 @@ bool MenedzerZlecen::probaPrzypisaniaPojazdu(Zlecenie& z, std::shared_ptr<Pojazd
     return true;
 }
 
+/**
+ * @brief Próbuje przypisać pracownika do zlecenia.
+ * * Weryfikuje dostępność czasową pracownika oraz sprawdza, czy posiada on
+ * uprawnienia do obsługi przynajmniej jednego z już przypisanych do zlecenia pojazdów.
+ * @param z Zlecenie, do którego przypisujemy pracownika.
+ * @param pr Wskaźnik na pracownika.
+ * @return true jeśli przypisanie zakończyło się sukcesem, false w przeciwnym razie.
+ */
 bool MenedzerZlecen::probaPrzypisaniaPracownika(Zlecenie& z, std::shared_ptr<Pracownik> pr) {
     if (!pr) {
         return false;
@@ -63,6 +84,14 @@ bool MenedzerZlecen::probaPrzypisaniaPracownika(Zlecenie& z, std::shared_ptr<Pra
     return true;
 }
 
+/**
+ * @brief Sprawdza, czy zlecenie jest w pełni przygotowane do realizacji.
+ * * Weryfikuje, czy zlecenie nie zostało już rozliczone, czy posiada przypisane
+ * pojazdy oraz czy dla każdego przypisanego pojazdu znajduje się przynajmniej
+ * jeden pracownik z odpowiednimi uprawnieniami.
+ * @param z Zlecenie do weryfikacji.
+ * @return true jeśli zlecenie jest gotowe do realizacji, false w przeciwnym razie.
+ */
 bool MenedzerZlecen::weryfikujGotowoscDoRealizacji(const Zlecenie& z) {
     if (z.czyJestRozliczone()) {
         return false;
@@ -91,12 +120,25 @@ bool MenedzerZlecen::weryfikujGotowoscDoRealizacji(const Zlecenie& z) {
     return true;
 }
 
+/**
+ * @brief Pomocnicza metoda weryfikująca uprawnienia pracownika do obsługi pojazdu.
+ * @param pr Wskaźnik na pracownika.
+ * @param p Wskaźnik na pojazd.
+ * @return true jeśli pracownik może wykonać pracę w danym pojeździe, false w przeciwnym razie.
+ */
 bool MenedzerZlecen::sprawdzUprawnienia(std::shared_ptr<Pracownik> pr, std::shared_ptr<Pojazd> p) {
     if (!pr || !p) return false;
     std::string wymaganaKat = p->pobierzWymaganaKategorie();
     return pr->mozeWykonacPrace(wymaganaKat);
 }
 
+/**
+ * @brief Sprawdza dostępność wszystkich zasobów już przypisanych do zlecenia.
+ * * Użyteczne przy sprawdzaniu, czy wcześniejsze rezerwacje zasobów nadal
+ * są poprawne w kontekście okresu realizacji zlecenia.
+ * @param z Zlecenie z przypisanymi zasobami.
+ * @return true jeśli wszystkie zasoby są dostępne, false jeśli wystąpiła kolizja.
+ */
 bool MenedzerZlecen::sprawdzDostepnoscZasobow(const Zlecenie& z) const {
     // weryfikacja zasobów już przypisanych do zlecenia
     for (const auto& p : z.pobierzPojazdy()) {

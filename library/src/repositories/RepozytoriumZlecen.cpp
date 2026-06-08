@@ -1,3 +1,7 @@
+/**
+* @file RepozytoriumZlecen.cpp
+ * @brief Implementacja klasy RepozytoriumZlecen zarządzającej bazą zleceń transportowych.
+ */
 #include "../../include/repositories/RepozytoriumZlecen.h"
 #include "../../include/repositories/RepozytoriumKlientow.h"
 #include "../../include/repositories/RepozytoriumPojazdow.h"
@@ -10,6 +14,11 @@
 
 using namespace std;
 
+/**
+ * @brief Wyszukuje zlecenie w repozytorium na podstawie jego unikalnego identyfikatora.
+ * @param id Identyfikator zlecenia.
+ * @return Shared pointer do znalezionego zlecenia lub nullptr, jeśli nie istnieje.
+ */
 shared_ptr<Zlecenie> RepozytoriumZlecen::pobierzZlecenie(const string& id) const {
     for (const auto& el : elementy) {
         if (el && el->pobierzId() == id) {
@@ -19,6 +28,11 @@ shared_ptr<Zlecenie> RepozytoriumZlecen::pobierzZlecenie(const string& id) const
     return nullptr;
 }
 
+/**
+ * @brief Pobiera zlecenie na podstawie jego indeksu w kontenerze.
+ * @param i Indeks zlecenia w liście.
+ * @return Shared pointer do zlecenia lub nullptr, jeśli indeks jest poza zakresem.
+ */
 shared_ptr<Zlecenie> RepozytoriumZlecen::pobierzPoIndeksie(int i) const {
     if (i >= 0 && i < static_cast<int>(elementy.size())) {
         return elementy[i];
@@ -26,17 +40,29 @@ shared_ptr<Zlecenie> RepozytoriumZlecen::pobierzPoIndeksie(int i) const {
     return nullptr;
 }
 
+/**
+ * @brief Dodaje nowe zlecenie do repozytorium.
+ * @param element Shared pointer do dodawanego obiektu typu Zlecenie.
+ */
 void RepozytoriumZlecen::dodajZlecenie(shared_ptr<Zlecenie> element) {
     if (element) {
         elementy.push_back(element);
     }
 }
 
+/**
+ * @brief Usuwa wskazane zlecenie z repozytorium.
+ * @param element Shared pointer do zlecenia, które ma zostać usunięte.
+ */
 void RepozytoriumZlecen::usunZlecenie(shared_ptr<Zlecenie> element) {
     if (!element) return;
     elementy.erase(remove(elementy.begin(), elementy.end(), element), elementy.end());
 }
 
+/**
+ * @brief Generuje raport tekstowy zawierający podsumowanie wszystkich zleceń.
+ * @return Sformatowany ciąg znaków z podsumowaniami zleceń.
+ */
 string RepozytoriumZlecen::raport() const {
     ostringstream oss;
     for (const auto& el : elementy) {
@@ -47,10 +73,19 @@ string RepozytoriumZlecen::raport() const {
     return oss.str();
 }
 
+/**
+ * @brief Zwraca liczbę zleceń w repozytorium.
+ * @return Rozmiar kolekcji.
+ */
 int RepozytoriumZlecen::rozmiar() const {
     return elementy.size();
 }
 
+/**
+ * @brief Wyszukuje zlecenia spełniające określone kryterium (predykat).
+ * @param predykat Funkcja/funktor określający warunek wyszukiwania.
+ * @return Wektor zleceń spełniających warunek.
+ */
 vector<shared_ptr<Zlecenie>> RepozytoriumZlecen::znajdzPo(ZleceniePredykat predykat) const {
     vector<shared_ptr<Zlecenie>> znalezione;
     for (const auto& el : elementy) {
@@ -61,10 +96,18 @@ vector<shared_ptr<Zlecenie>> RepozytoriumZlecen::znajdzPo(ZleceniePredykat predy
     return znalezione;
 }
 
+/**
+ * @brief Pobiera listę wszystkich zleceń w repozytorium.
+ * @return Wektor wskaźników do wszystkich zleceń.
+ */
 vector<shared_ptr<Zlecenie>> RepozytoriumZlecen::pobierzWszystkie() const {
     return elementy;
 }
 
+/**
+ * @brief Zapisuje aktualny stan repozytorium do pliku.
+ * @param sciezka Ścieżka do pliku docelowego.
+ */
 void RepozytoriumZlecen::zapiszStan(const string& sciezka) const {
     ofstream plik(sciezka);
     if (plik.is_open()) {
@@ -73,6 +116,10 @@ void RepozytoriumZlecen::zapiszStan(const string& sciezka) const {
     }
 }
 
+/**
+ * @brief Serializuje obiekty zleceń do formatu tekstowego.
+ * @return Ciąg znaków z danymi zleceń.
+ */
 string RepozytoriumZlecen::serializuj() const {
     ostringstream oss;
     for (const auto& el : elementy) {
@@ -91,7 +138,16 @@ void RepozytoriumZlecen::deserializuj(const string& dane) {
     // Nie używamy tej wersji dla Zleceń
 }
 
-
+/**
+ * @brief Wczytuje stan zleceń z pliku zewnętrznego, powiązując je z danymi zasobów.
+ * * Metoda parsuje plik tekstowy, tworzy instancje klasy Zlecenie i przypisuje
+ * do nich odpowiednich klientów, pojazdy oraz pracowników, korzystając z
+ * przekazanych repozytoriów.
+ * @param sciezka Ścieżka do pliku z danymi zleceń.
+ * @param rKlienci Referencja do repozytorium klientów.
+ * @param rPojazdy Referencja do repozytorium pojazdów.
+ * @param rPracownicy Referencja do repozytorium pracowników.
+ */
 void RepozytoriumZlecen::wczytajStan(const std::string& sciezka,
                                      RepozytoriumKlientow& rKlienci,
                                      RepozytoriumPojazdow& rPojazdy,
