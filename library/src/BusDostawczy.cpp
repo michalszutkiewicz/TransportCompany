@@ -16,24 +16,20 @@ BusDostawczy::BusDostawczy(std::string nrRej, double kosztAmort, double pojemnos
     : Pojazd(nrRej, kosztAmort), pojemnoscM3(pojemnoscM3) {}
 
 /**
- * @brief Weryfikuje, czy bus może wykonać zlecenie.
- * * Sprawdza ładowność (objętość) oraz zgodność kategorii uprawnień z wymaganiami zlecenia.
- * @param z Referencja do zlecenia.
- * @return true jeśli pojazd spełnia wymagania zlecenia, false w przeciwnym razie.
+ * @brief Weryfikuje, czy bus dostawczy może wykonać dane zlecenie.
+ * * Metoda bezpośrednio odpytuje przekazany obiekt zlecenia o jego specyficzne wymagania.
+ * Weryfikacja opiera się na sprawdzeniu, czy wymagana objętość ładunku mieści się
+ * w przestrzeni ładunkowej busa (pomijając kryterium wagi) oraz czy kategoria prawa jazdy
+ * przypisana do zlecenia jest zgodna z kategorią pojazdu (B).
+ * * @param z Stała referencja do obiektu zlecenia, stanowiącego źródło wymagań transportowych.
+ * @return true jeśli pojazd spełnia wymagania objętościowe i uprawnień zlecenia, false w przeciwnym razie.
  */
 bool BusDostawczy::czyMozeWykonacZlecenie(const Zlecenie& z) const {
-    return sprawdzLadownosc(z.pobierzWymaganaWage(), z.pobierzObjetosc()) &&
-           z.pobierzWymaganaKategorie() == pobierzWymaganaKategorie();
-}
+    // Bus pyta obiekt zlecenia tylko o objętość
+    bool odpowiedniaObjetosc = z.pobierzObjetosc() <= pojemnoscM3;
+    bool odpowiedniaKategoria = z.pobierzWymaganaKategorie() == pobierzWymaganaKategorie();
 
-/**
- * @brief Sprawdza, czy ładunek mieści się w pojemności busa.
- * @param wymaganaWaga Masa ładunku (w przypadku busa kluczowa jest objętość).
- * @param objetosc Objętość ładunku.
- * @return true jeśli objętość jest mniejsza lub równa dostępnej pojemności, false w przeciwnym razie.
- */
-bool BusDostawczy::sprawdzLadownosc(double wymaganaWaga, double objetosc) const {
-    return objetosc <= pojemnoscM3;
+    return odpowiedniaObjetosc && odpowiedniaKategoria;
 }
 
 /**

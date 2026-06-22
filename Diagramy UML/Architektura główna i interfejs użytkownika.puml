@@ -60,4 +60,15 @@ InterfejsUI *-- RepozytoriumKlientow
 InterfejsUI *-- RepozytoriumPojazdow
 InterfejsUI *-- RepozytoriumPracownikow
 InterfejsUI *-- RepozytoriumZlecen
+
+    note left of InterfejsUI
+      Separacja odpowiedzialności: Interfejs użytkownika (InterfejsUI) współpracuje
+      bezpośrednio z dedykowanymi repozytoriami, co odciąża klasę interfejsu i separuje logikę
+      obsługi CRUD od warstwy prezentacji.
+    end note
+    note left of ISerializowalny
+       Standard serializacji: Wszystkie repozytoria implementują interfejs ISerializowalny, co
+       ujednolica mechanizm zapisu i odczytu stanu aplikacji w całym systemie, zapewniając spójne
+       zarządzanie trwałością danych.
+    end note
 @enduml

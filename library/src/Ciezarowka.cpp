@@ -17,25 +17,20 @@ Ciezarowka::Ciezarowka(std::string nrRej, double kosztAmort, double maksLadownos
     : Pojazd(nrRej, kosztAmort), maksLadownoscTony(maksLadownosc), wymagaNaczepy(wymagaNaczepy) {}
 
 /**
- * @brief Weryfikuje, czy ciężarówka może wykonać zlecenie.
- * * Sprawdza ładowność (masę) oraz zgodność kategorii uprawnień z wymaganiami zlecenia.
- * @param z Referencja do zlecenia.
- * @return true jeśli pojazd spełnia wymagania zlecenia, false w przeciwnym razie.
+ * @brief Weryfikuje, czy ciężarówka może wykonać dane zlecenie.
+ * * Metoda bezpośrednio odpytuje przekazany obiekt zlecenia o jego specyficzne wymagania.
+ * Weryfikacja opiera się na sprawdzeniu, czy wymagana masa ładunku (po konwersji
+ * z kilogramów na tony) nie przekracza dopuszczalnej ładowności ciężarówki oraz
+ * czy kategoria prawa jazdy przypisana do zlecenia jest zgodna z kategorią pojazdu (C).
+ * * @param z Stała referencja do obiektu zlecenia, stanowiącego źródło wymagań transportowych.
+ * @return true jeśli pojazd spełnia wymagania tonażowe i uprawnień zlecenia, false w przeciwnym razie.
  */
 bool Ciezarowka::czyMozeWykonacZlecenie(const Zlecenie& z) const {
-    return sprawdzLadownosc(z.pobierzWymaganaWage(), z.pobierzObjetosc()) &&
-           z.pobierzWymaganaKategorie() == pobierzWymaganaKategorie();
-}
+    // Ciężarówka pyta obiekt zlecenia tylko o wagę
+    bool odpowiedniaWaga = (z.pobierzWymaganaWage() / 1000.0) <= maksLadownoscTony;
+    bool odpowiedniaKategoria = z.pobierzWymaganaKategorie() == pobierzWymaganaKategorie();
 
-/**
- * @brief Sprawdza, czy ładunek mieści się w limicie wagowym ciężarówki.
- * * Metoda dokonuje konwersji masy z kilogramów (zlecenia) na tony (pojazdu).
- * @param wymaganaWaga Masa ładunku w kilogramach.
- * @param objetosc Objętość ładunku (pomijana w logice dla ciężarówki).
- * @return true jeśli masa w tonach jest mniejsza lub równa maksymalnej ładowności, false w przeciwnym razie.
- */
-bool Ciezarowka::sprawdzLadownosc(double wymaganaWaga, double objetosc) const {
-    return (wymaganaWaga / 1000.0) <= maksLadownoscTony;
+    return odpowiedniaWaga && odpowiedniaKategoria;
 }
 
 /**

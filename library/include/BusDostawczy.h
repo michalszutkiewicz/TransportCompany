@@ -34,14 +34,6 @@ public:
     bool czyMozeWykonacZlecenie(const Zlecenie& z) const override;
 
     /**
-     * @brief Weryfikuje czy ładunek mieści się w limitach wagowych i objętościowych pojazdu.
-     * @param wymaganaWaga Waga ładunku w kg.
-     * @param objetosc Objętość ładunku w m3.
-     * @return true jeśli ładunek jest możliwy do przewiezienia, false jeśli przekracza limity.
-     */
-    bool sprawdzLadownosc(double wymaganaWaga, double objetosc) const override;
-
-    /**
      * @brief Zwraca kategorię prawa jazdy wymaganą do prowadzenia tego pojazdu.
      * @return Stała wartość "B" dla tej klasy pojazdów.
      */

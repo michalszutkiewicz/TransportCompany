@@ -36,14 +36,6 @@ public:
     bool czyMozeWykonacZlecenie(const Zlecenie& z) const override;
 
     /**
-     * @brief Weryfikuje czy ładunek mieści się w limicie tonażu ciężarówki.
-     * @param wymaganaWaga Waga ładunku w kg.
-     * @param objetosc Objętość ładunku w m3.
-     * @return true jeśli ładunek nie przekracza dopuszczalnej ładowności, false w przeciwnym razie.
-     */
-    bool sprawdzLadownosc(double wymaganaWaga, double objetosc) const override;
-
-    /**
      * @brief Zwraca kategorię prawa jazdy wymaganą do obsługi pojazdu ciężarowego.
      * @return Stała wartość "C" dla tej klasy pojazdów.
      */

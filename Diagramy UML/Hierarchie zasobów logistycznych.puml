@@ -9,6 +9,12 @@ class Termin {
     + serializuj(): string const
 }
 
+    note left of Termin
+      Bezpieczeństwo terminów: Klasa Termin pełni rolę „strażnika” czasu. W przypadku próby
+      utworzenia błędnego przedziału czasowego (np. data zakończenia przed datą rozpoczęcia),
+      błędnych danych.
+    end note
+
 package "Hierarchia 1: Pojazdy (Polimorfizm)" {
     abstract class Pojazd {
         - nrRejestracyjny: string
@@ -47,5 +53,12 @@ package "Hierarchia 2: Pracownicy (Polimorfizm)" {
     Pracownik <|-- Kierowca
 }
 
+    note bottom of "Hierarchia 2: Pracownicy (Polimorfizm)"
+      Elastyczność polimorficzna: Wykorzystanie klas abstrakcyjnych Pojazd oraz Pracownik
+      pozwala na łatwe rozszerzanie systemu o nowe typy zasobów (np. nowe kategorie pojazdów)
+      bez konieczności modyfikacji istniejących mechanizmów. Każdy zasób samodzielnie zarządza
+      swoim kalendarzem dostępności.
+    end note
 Zlecenie "1" *-- "1" Termin
+Termin ..> InvalidTermException : «zgłasza»
 @enduml

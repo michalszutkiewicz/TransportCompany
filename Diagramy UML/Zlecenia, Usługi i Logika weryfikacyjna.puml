@@ -10,6 +10,12 @@ package "Realizacja Biznesowa" {
         + sprawdzDostepnoscZasobow(z: const Zlecenie&): bool const
     }
 
+    note right of MenedzerZlecen
+      Logika biznesowa: MenedzerZlecen pełni rolę
+      „mózgu” systemu, weryfikując gotowość
+      zleceń do realizacji.
+    end note
+
     class Zlecenie {
         - idZlecenia: string
         - okresRealizacji: Termin
@@ -54,4 +60,39 @@ package "Hierarchia Uslug (Wzorzec Strategii)" {
 
 Zlecenie "1" *-- "1" Usluga
 MenedzerZlecen ..> Zlecenie : zarządza
+
+package "Warstwa Wyjątków" {
+    class std::runtime_error {
+    }
+
+    class TransportException {
+        + TransportException(message: const string&)
+    }
+
+    class InvalidTermException {
+        + InvalidTermException(message: const string&)
+    }
+
+    class ResourceUnavailableException {
+        + ResourceUnavailableException(message: const string&)
+    }
+
+    class PermissionDeniedException {
+        + PermissionDeniedException(message: const string&)
+    }
+
+    std::runtime_error <|-- TransportException
+    TransportException <|-- InvalidTermException
+    TransportException <|-- ResourceUnavailableException
+    TransportException <|-- PermissionDeniedException
+}
+
+note bottom of "Warstwa Wyjątków"
+  Obsługa błędów: Wprowadzono dedykowaną warstwę wyjątków.
+  Zamiast bool, menedżer zgłasza konkretne wyjątki (np. ResourceUnavailableException),
+  co zapewnia precyzyjną informację o błędzie.
+end note
+
+MenedzerZlecen ..> ResourceUnavailableException : «zgłasza»
+MenedzerZlecen ..> PermissionDeniedException : «zgłasza»
 @enduml

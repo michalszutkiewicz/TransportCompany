@@ -61,14 +61,6 @@ public:
     virtual bool czyMozeWykonacZlecenie(const Zlecenie& z) const = 0;
 
     /**
-     * @brief Sprawdza, czy parametry ładunkowe zlecenia mieszczą się w limitach pojazdu.
-     * @param wymaganaWaga Masa ładunku.
-     * @param objetosc Objętość ładunku.
-     * @return true jeśli ładunek może być bezpiecznie przewieziony, false w przeciwnym razie.
-     */
-    virtual bool sprawdzLadownosc(double wymaganaWaga, double objetosc) const = 0;
-
-    /**
      * @brief Pobiera kategorię prawa jazdy wymaganą do prowadzenia pojazdu.
      * @return Ciąg znaków oznaczający kategorię (np. "C", "B").
      */
