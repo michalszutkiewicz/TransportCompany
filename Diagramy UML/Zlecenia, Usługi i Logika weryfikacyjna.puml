@@ -1,98 +1,115 @@
 @startuml
-skinparam classAttributeIconSize 0
 
-package "Realizacja Biznesowa" {
-    class MenedzerZlecen {
-        + probaPrzypisaniaPojazdu(z: Zlecenie&, p: std::shared_ptr<Pojazd>): bool
-        + probaPrzypisaniaPracownika(z: Zlecenie&, pr: std::shared_ptr<Pracownik>): bool
-        + weryfikujGotowoscDoRealizacji(z: const Zlecenie&): bool
-        + sprawdzUprawnienia(pr: std::shared_ptr<Pracownik>, p: std::shared_ptr<Pojazd>): bool
-        + sprawdzDostepnoscZasobow(z: const Zlecenie&): bool const
-    }
+/' Puste klasy dla zachowania relacji z innymi modułami '/
+class Termin {}
+class Pojazd {}
+class Pracownik {}
 
-    note right of MenedzerZlecen
-      Logika biznesowa: MenedzerZlecen pełni rolę
-      „mózgu” systemu, weryfikując gotowość
-      zleceń do realizacji.
-    end note
+class Klient {
 
-    class Zlecenie {
-        - idZlecenia: string
-        - okresRealizacji: Termin
-        - czyRozliczone: bool
-        - wymaganaWaga: double
-        - objetosc: double
-        - wymaganaKategoria: string
-        - klient: std::shared_ptr<Klient>
-        - usluga: std::shared_ptr<Usluga>
-        - przypisanePojazdy: std::vector<std::shared_ptr<Pojazd>>
-        - przypisaniPracownicy: std::vector<std::shared_ptr<Pracownik>>
-        + Zlecenie(id: string, okres: Termin, k: std::shared_ptr<Klient>, u: std::shared_ptr<Usluga>, waga: double, obj: double, kat: string)
-        + dodajPojazd(p: std::shared_ptr<Pojazd>): void
-        + dodajPracownika(pr: std::shared_ptr<Pracownik>): void
-        + obliczPelnyKoszt(): double const
-        + rozlicz(): void
-        + serializuj(): string const
-    }
+    -idKlienta : string
+    -imie : string
+    -nazwisko : string
+    +pobierzPelneDane() : string 
+    +serializuj() : string 
 }
 
-package "Hierarchia Uslug (Wzorzec Strategii)" {
-    abstract class Usluga {
-        - nazwaZlecenia: string
-        - dystans: double
-        + {abstract} obliczKoszt(): double const
-    }
-
-    class TransportStandardowy {
-        - stawkaZaKm: double
-        + obliczKoszt(): double const
-    }
-
-    class TransportEkspresowy {
-        - oplataStala: double
-        - stawkaZaKm: double
-        + obliczKoszt(): double const
-    }
-
-    Usluga <|-- TransportStandardowy
-    Usluga <|-- TransportEkspresowy
+class MenedzerZlecen {
+    +probaPrzypisaniaPojazdu(Zlecenie& z, shared_ptr<Pojazd> p) : bool
+    +probaPrzypisaniaPracownika(Zlecenie& z, shared_ptr<Pracownik> pr) : bool
+    +sprawdzDostepnoscZasobow(const Zlecenie& z) : bool 
+    +sprawdzUprawnienia(shared_ptr<Pracownik> pr, shared_ptr<Pojazd> p) : bool
+    +weryfikujGotowoscDoRealizacji(const Zlecenie& z) : bool
 }
 
-Zlecenie "1" *-- "1" Usluga
-MenedzerZlecen ..> Zlecenie : zarządza
-
-package "Warstwa Wyjątków" {
-    class std::runtime_error {
-    }
-
-    class TransportException {
-        + TransportException(message: const string&)
-    }
-
-    class InvalidTermException {
-        + InvalidTermException(message: const string&)
-    }
-
-    class ResourceUnavailableException {
-        + ResourceUnavailableException(message: const string&)
-    }
-
-    class PermissionDeniedException {
-        + PermissionDeniedException(message: const string&)
-    }
-
-    std::runtime_error <|-- TransportException
-    TransportException <|-- InvalidTermException
-    TransportException <|-- ResourceUnavailableException
-    TransportException <|-- PermissionDeniedException
+abstract class Usluga {
+    #dystans : double
+    +{abstract} obliczKoszt() : double 
+    #nazwaZlecenia : string
+    +{abstract} pobierzSzczegoly() : string 
 }
 
-note bottom of "Warstwa Wyjątków"
-  Obsługa błędów: Wprowadzono dedykowaną warstwę wyjątków.
-  Zamiast bool, menedżer zgłasza konkretne wyjątki (np. ResourceUnavailableException),
-  co zapewnia precyzyjną informację o błędzie.
+class TransportEkspresowy {
+    +obliczKoszt() : double 
+    -oplataStala : double
+    -stawkaEkspresowa : double
+    +pobierzSzczegoly() : string 
+}
+
+class TransportStandardowy {
+    +obliczKoszt() : double 
+    -stawkaZaKm : double
+    +pobierzSzczegoly() : string 
+}
+
+class Zlecenie {
+    -okresRealizacji : Termin
+    -czyRozliczone : bool
+    -objetosc : double
+    +obliczPelnyKoszt() : double
+    -wymaganaWaga : double
+    -klient : shared_ptr<Klient>
+    -usluga : shared_ptr<Usluga>
+    -idZlecenia : string
+    +pobierzPodsumowanie() : string 
+    +pobierzStatus() : string
+    +serializuj() : string 
+    -wymaganaKategoria : string
+    -przypisanePojazdy : vector<shared_ptr<Pojazd>>
+    -przypisaniPracownicy : vector<shared_ptr<Pracownik>>
+    +dodajPojazd(shared_ptr<Pojazd> p) : void
+    +dodajPracownika(shared_ptr<Pracownik> pr) : void
+    +rozlicz() : void
+}
+
+class TransportException {
+    +TransportException(const string& message)
+}
+
+class InvalidTermException {
+    +InvalidTermException(const string& message)
+}
+
+class PermissionDeniedException {
+    +PermissionDeniedException(const string& message)
+}
+
+class ResourceUnavailableException {
+    +ResourceUnavailableException(const string& message)
+}
+
+/' Relacje '/
+Usluga <|-- TransportEkspresowy
+Usluga <|-- TransportStandardowy
+
+TransportException <|-- InvalidTermException
+TransportException <|-- PermissionDeniedException
+TransportException <|-- ResourceUnavailableException
+
+Zlecenie o-- Klient
+Zlecenie *-- Termin
+Zlecenie o-- Usluga
+Zlecenie o-- Pojazd
+Zlecenie o-- Pracownik
+
+MenedzerZlecen ..> Zlecenie : uzywa
+
+note right of TransportException
+  **Użycie wyjątków do sygnalizowania błędów:**
+  Zbudowano hierarchię klas wyjątków dziedziczących
+  po bazowym TransportException. Pozwala to na precyzyjne
+  przechwytywanie i obsługę konkretnych problemów biznesowych
+  (np. brak uprawnień vs niedostępność zasobu) bez zwracania
+  kodów błędu.
 end note
 
-MenedzerZlecen ..> ResourceUnavailableException : «zgłasza»
-MenedzerZlecen ..> PermissionDeniedException : «zgłasza»
+note bottom of Zlecenie
+  **Delegacja (Wzorzec Strategia):**
+  Zlecenie posiada relację z klasą abstrakcyjną Usluga.
+  Podczas wywołania metody 'obliczPelnyKoszt()', Zlecenie
+  deleguje właściwe obliczenia do wstrzykniętego obiektu
+  Usluga. Dzięki polimorfizmowi, kalkulacja jest inna
+  zależnie od tego, czy użyto usługi ekspresowej czy standardowej.
+end note
+
 @enduml

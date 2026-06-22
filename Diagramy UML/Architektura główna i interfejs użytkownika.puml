@@ -1,74 +1,115 @@
 @startuml
-skinparam classAttributeIconSize 0
-skinparam linetype ortho
 
-package "Warstwa Prezentacji" {
-    class InterfejsUI {
-        - repoKlienci: RepozytoriumKlientow
-        - repoPojazdy: RepozytoriumPojazdow
-        - repoPracownicy: RepozytoriumPracownikow
-        - repoZlecenia: RepozytoriumZlecen
-        + uruchom(): void
-        + wyswietlMenu(): void
-        + obsluzKreatorZlecenia(): void
-    }
+/' Puste klasy dla zachowania relacji z innymi modułami '/
+class Klient {}
+class Pojazd {}
+class Pracownik {}
+class Zlecenie {}
+
+abstract class ISerializowalny {
+
+    +{abstract} serializuj() : string 
+    +{abstract} deserializuj(const string& dane) : void
+    +{abstract} wczytajStan(const string& sciezka) : void
+    +{abstract} zapiszStan(const string& sciezka) : void 
 }
 
-package "Warstwa Składowania Danych" {
-    interface ISerializowalny {
-        + {abstract} zapiszStan(sciezka: const string&): void
-        + {abstract} wczytajStan(sciezka: const string&): void
-    }
+class InterfejsUI {
+    -repoKlienci : RepozytoriumKlientow
+    -repoPojazdy : RepozytoriumPojazdow
+    -repoPracownicy : RepozytoriumPracownikow
+    -repoZlecenia : RepozytoriumZlecen
+    +dodajKlienta() : void
+    +dodajPojazd() : void
+    +dodajPracownika() : void
+    +menuDodajZasob() : void
+    +menuPokazDane() : void
+    +obsluzKreatorZlecenia() : void
+    +pokazKlientow() : void
+    +pokazPojazdy() : void
+    +pokazPracownikow() : void
+    +pokazZlecenia() : void
+    +uruchom() : void
+    +wczytajStanSystemu(const string& sciezka) : void
+    +wyswietlMenu() : void
+    +zapiszStanSystemu(const string& sciezka) : void
 }
 
-package "Warstwa Logiki Biznesowej" {
-    class RepozytoriumKlientow {
-        - klienci: std::map<string, std::shared_ptr<Klient>>
-        + dodajKlienta(k: std::shared_ptr<Klient>): void
-        + zapiszStan(sciezka: const string&): void
-        + wczytajStan(sciezka: const string&): void
-    }
-
-    class RepozytoriumPojazdow {
-        - pojazdy: std::map<string, std::shared_ptr<Pojazd>>
-        + dodajPojazd(p: std::shared_ptr<Pojazd>): void
-        + zapiszStan(sciezka: const string&): void
-        + wczytajStan(sciezka: const string&): void
-    }
-
-    class RepozytoriumPracownikow {
-        - pracownicy: std::map<string, std::shared_ptr<Pracownik>>
-        + dodajPracownika(p: std::shared_ptr<Pracownik>): void
-        + zapiszStan(sciezka: const string&): void
-        + wczytajStan(sciezka: const string&): void
-    }
-
-    class RepozytoriumZlecen {
-        - zlecenia: std::vector<std::shared_ptr<Zlecenie>>
-        + dodajZlecenie(z: std::shared_ptr<Zlecenie>): void
-        + zapiszStan(sciezka: const string&): void
-        + wczytajStan(sciezka: const string&): void
-    }
+class RepozytoriumKlientow {
+    +raport() : string 
+    +serializuj() : string 
+    -elementy : vector<shared_ptr<Klient>>
+    +pobierzWszystkie() : vector<shared_ptr<Klient>> 
+    +znajdzPo(function<bool ( shared_ptr<Klient>)> predykat) : vector<shared_ptr<Klient>> 
+    +deserializuj(const string& dane) : void
+    +dodajKlienta(shared_ptr<Klient> element) : void
+    +usunKlienta(shared_ptr<Klient> element) : void
+    +wczytajStan(const string& sciezka) : void
+    +zapiszStan(const string& sciezka) : void 
 }
 
-ISerializowalny <|.. RepozytoriumKlientow
-ISerializowalny <|.. RepozytoriumPojazdow
-ISerializowalny <|.. RepozytoriumPracownikow
-ISerializowalny <|.. RepozytoriumZlecen
+class RepozytoriumPojazdow {
+    +raport() : string 
+    +serializuj() : string 
+    -elementy : vector<shared_ptr<Pojazd>>
+    +pobierzWszystkie() : vector<shared_ptr<Pojazd>> 
+    +znajdzPo(function<bool ( shared_ptr<Pojazd>)> predykat) : vector<shared_ptr<Pojazd>> 
+    +deserializuj(const string& dane) : void
+    +dodajPojazd(shared_ptr<Pojazd> element) : void
+    +usunPojazd(shared_ptr<Pojazd> element) : void
+    +wczytajStan(const string& sciezka) : void
+    +zapiszStan(const string& sciezka) : void 
+}
+
+class RepozytoriumPracownikow {
+    +raport() : string 
+    +serializuj() : string 
+    -elementy : vector<shared_ptr<Pracownik>>
+    +pobierzWszystkie() : vector<shared_ptr<Pracownik>> 
+    +znajdzPo(function<bool ( shared_ptr<Pracownik>)> predykat) : vector<shared_ptr<Pracownik>> 
+    +deserializuj(const string& dane) : void
+    +dodajPracownika(shared_ptr<Pracownik> element) : void
+    +usunPracownika(shared_ptr<Pracownik> element) : void
+    +wczytajStan(const string& sciezka) : void
+    +zapiszStan(const string& sciezka) : void 
+}
+
+class RepozytoriumZlecen {
+    +raport() : string 
+    +serializuj() : string 
+    -elementy : vector<shared_ptr<Zlecenie>>
+    +pobierzWszystkie() : vector<shared_ptr<Zlecenie>> 
+    +znajdzPo(function<bool ( shared_ptr<Zlecenie>)> predykat) : vector<shared_ptr<Zlecenie>> 
+    +deserializuj(const string& dane) : void
+    +dodajZlecenie(shared_ptr<Zlecenie> element) : void
+    +usunZlecenie(shared_ptr<Zlecenie> element) : void
+    +wczytajStan(const string& sciezka) : void
+    +wczytajStan(const string& sciezka, RepozytoriumKlientow& rKlienci, RepozytoriumPojazdow& rPojazdy, RepozytoriumPracownikow& rPracownicy) : void
+    +zapiszStan(const string& sciezka) : void 
+}
+
+/' Relacje '/
+ISerializowalny <|-- RepozytoriumKlientow
+ISerializowalny <|-- RepozytoriumPojazdow
+ISerializowalny <|-- RepozytoriumPracownikow
+ISerializowalny <|-- RepozytoriumZlecen
 
 InterfejsUI *-- RepozytoriumKlientow
 InterfejsUI *-- RepozytoriumPojazdow
 InterfejsUI *-- RepozytoriumPracownikow
 InterfejsUI *-- RepozytoriumZlecen
 
-    note left of InterfejsUI
-      Separacja odpowiedzialności: Interfejs użytkownika (InterfejsUI) współpracuje
-      bezpośrednio z dedykowanymi repozytoriami, co odciąża klasę interfejsu i separuje logikę
-      obsługi CRUD od warstwy prezentacji.
-    end note
-    note left of ISerializowalny
-       Standard serializacji: Wszystkie repozytoria implementują interfejs ISerializowalny, co
-       ujednolica mechanizm zapisu i odczytu stanu aplikacji w całym systemie, zapewniając spójne
-       zarządzanie trwałością danych.
-    end note
+RepozytoriumKlientow o-- Klient
+RepozytoriumPojazdow o-- Pojazd
+RepozytoriumPracownikow o-- Pracownik
+RepozytoriumZlecen o-- Zlecenie
+
+note right of InterfejsUI
+  **Odseparowanie logiki od UI i składowania danych:**
+  Klasa InterfejsUI odpowiada wyłącznie za komunikację
+  z użytkownikiem, a zadania związane z utrwalaniem i
+  przechowywaniem danych są oddelegowane do klas Repozytoriów.
+  Główna logika biznesowa nie przenika do warstwy prezentacji.
+end note
+
 @enduml

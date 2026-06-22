@@ -1,64 +1,79 @@
 @startuml
-skinparam classAttributeIconSize 0
 
 class Termin {
-    - dataOd: boost::posix_time::ptime
-    - dataDo: boost::posix_time::ptime
-    + Termin(dataOd: boost::posix_time::ptime, dataDo: boost::posix_time::ptime)
-    + czyKoliduje(inny: const Termin&): bool const
-    + serializuj(): string const
+    +czyKoliduje(const Termin& inny) : bool 
+    -dataDo : pt::ptime
+    -dataOd : pt::ptime
+    +serializuj() : string 
 }
 
-    note left of Termin
-      Bezpieczeństwo terminów: Klasa Termin pełni rolę „strażnika” czasu. W przypadku próby
-      utworzenia błędnego przedziału czasowego (np. data zakończenia przed datą rozpoczęcia),
-      błędnych danych.
-    end note
-
-package "Hierarchia 1: Pojazdy (Polimorfizm)" {
-    abstract class Pojazd {
-        - nrRejestracyjny: string
-        - kosztAmortyzacji: double
-        + czyDostepny(okres: Termin): bool
-        + zarezerwujTermin(okres: Termin): void
-    }
-
-    class Ciezarowka {
-        - maksLadownoscTony: double
-        - wymagaNaczepy: bool
-    }
-
-    class BusDostawczy {
-        - pojemnoscM3: double
-    }
-
-    Pojazd <|-- Ciezarowka
-    Pojazd <|-- BusDostawczy
+abstract class Pojazd {
+    +czyDostepny(const Termin& t) : bool 
+    +{abstract} czyMozeWykonacZlecenie(const Zlecenie& z) : bool 
+    -kosztAmortyzacji : double
+    -numerRejestracyjny : string
+    +{abstract} pobierzOpisPojazdu() : string
+    +{abstract} pobierzWymaganaKategorie() : string
+    +{abstract} serializuj() : string 
+    -zajeteTerminy : vector<Termin>
+    +zarezerwujTermin(const Termin& t) : void
 }
 
-package "Hierarchia 2: Pracownicy (Polimorfizm)" {
-    abstract class Pracownik {
-        - pesel: string
-        - imieNazwisko: string
-        - stawkaGodzinowa: double
-        + czyDostepny(okres: Termin): bool
-        + mozeWykonacPrace(wymaganaKat: string): bool
-        + zarezerwujTermin(okres: Termin): void
-    }
-
-    class Kierowca {
-        - kategoriePrawaJazdy: std::vector<std::string>
-    }
-
-    Pracownik <|-- Kierowca
+class BusDostawczy {
+    +czyMozeWykonacZlecenie(const Zlecenie& z) : bool
+    -pojemnoscM3 : double
+    +pobierzOpisPojazdu() : string
+    +pobierzWymaganaKategorie() : string
+    +serializuj() : string 
 }
 
-    note bottom of "Hierarchia 2: Pracownicy (Polimorfizm)"
-      Elastyczność polimorficzna: Wykorzystanie klas abstrakcyjnych Pojazd oraz Pracownik
-      pozwala na łatwe rozszerzanie systemu o nowe typy zasobów (np. nowe kategorie pojazdów)
-      bez konieczności modyfikacji istniejących mechanizmów. Każdy zasób samodzielnie zarządza
-      swoim kalendarzem dostępności.
-    end note
-Zlecenie "1" *-- "1" Termin
-Termin ..> InvalidTermException : «zgłasza»
+class Ciezarowka {
+     +czyMozeWykonacZlecenie(const Zlecenie& z) : bool
+    -wymagaNaczepy : bool
+    -maksLadownoscTony : double
+    +pobierzOpisPojazdu() : string
+    +pobierzWymaganaKategorie() : string
+    +serializuj() : string 
+}
+
+abstract class Pracownik {
+    +czyDostepny(const Termin& t) : bool 
+    +{abstract} czyUmieWykonacZlecenie(const Zlecenie& z) : bool 
+    +{abstract} mozeWykonacPrace(string wymaganaKategoria) : bool
+    -stawkaGodzinowa : double
+    -idPracownika : string
+    -imieNazwisko : string
+    +{abstract} pobierzPelneDane() : string
+    +{abstract} serializuj() : string 
+    -zajeteTerminy : vector<Termin>
+    +zarezerwujTermin(const Termin& t) : void
+}
+
+class Kierowca {
+    +czyUmieWykonacZlecenie(const Zlecenie& z) : bool
+    +mozeWykonacPrace(string wymaganaKategoria) : bool 
+    +pobierzPelneDane() : string
+    +serializuj() : string 
+    -kategoriePrawaJazdy : vector<string>
+}
+
+/' Relacje '/
+Pojazd <|-- BusDostawczy
+Pojazd <|-- Ciezarowka
+Pracownik <|-- Kierowca
+
+Pojazd *-- Termin
+Pracownik *-- Termin
+
+note right of Pojazd
+  **Dziedziczenie, abstrakcja i polimorfizm:**
+  Klasy abstrakcyjne Pojazd i Pracownik definiują
+  wirtualne destruktory (+~Pojazd()) oraz metody czysto
+  wirtualne (np. '{abstract} czyMozeWykonacZlecenie()').
+  Dzięki temu system może zarządzać wskaźnikami bazowymi,
+  a wywołanie metody uruchomi specyficzną logikę w klasach
+  pochodnych (BusDostawczy sprawdza pojemność M3, a Ciezarowka
+  maksymalną ładowność i naczepę - zachowanie jest całkowicie inne).
+end note
+
 @enduml
