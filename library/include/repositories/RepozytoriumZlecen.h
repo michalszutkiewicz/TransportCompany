@@ -12,6 +12,7 @@
 #include <memory>
 #include <functional>
 #include <string>
+#include "Usluga.h"
 
 class RepozytoriumKlientow;
 class RepozytoriumPojazdow;

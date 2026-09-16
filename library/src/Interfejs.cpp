@@ -8,13 +8,13 @@
  */
 #include "../include/Interfejs.h"
 #include "../include/managers/MenedzerZlecen.h"
+#include "../include/managers/PluginManager.h"
+#include "../include/Usluga.h"
 #include <iostream>
 
 #include "../include/BusDostawczy.h"
 #include "../include/Ciezarowka.h"
 #include "../include/Kierowca.h"
-#include "../include/TransportEkspresowy.h"
-#include "../include/TransportStandardowy.h"
 
 /**
  * @class InterfejsUI
@@ -46,7 +46,7 @@ void InterfejsUI::uruchom() {
             cin.ignore(1000, '\n');
             continue;
         }
-        
+
         switch (wybor) {
             case 1:
                 obsluzKreatorZlecenia();
@@ -222,8 +222,8 @@ void InterfejsUI::pokazKlientow() {
 
 /**
  * @brief Interaktywny kreator nowego zlecenia transportowego.
- * * Pobiera dane od użytkownika, dobiera zasoby przy pomocy MenedzeraZlecen
- * i zapisuje finalne zlecenie do repozytorium.
+ * * Pobiera dane od użytkownika, ładuje dynamiczne moduły usług przez PluginManager,
+ * dobiera zasoby przy pomocy MenedzeraZlecen i zapisuje zlecenie do repozytorium.
  */
 void InterfejsUI::obsluzKreatorZlecenia() {
     cout << "\n--- KREATOR ZLECENIA ---" << endl;
@@ -251,7 +251,7 @@ void InterfejsUI::obsluzKreatorZlecenia() {
     cout << "Podaj wymaganą kategorię pojazdu: ";
     cin >> kategoria;
 
-    // 2. Obsługa obiektu Termin (Wczytywanie daty i godziny od użytkownika)
+    // 2. Obsługa obiektu Termin
     namespace pt = boost::posix_time;
     string dataStart, godzinaStart;
     string dataKoniec, godzinaKoniec;
@@ -272,7 +272,6 @@ void InterfejsUI::obsluzKreatorZlecenia() {
         cin >> godzinaKoniec;
 
         try {
-            // Konwersja formatu "RRRR-MM-DD GG:MM:SS" na obiekt ptime
             czasOd = pt::time_from_string(dataStart + " " + godzinaStart);
             czasDo = pt::time_from_string(dataKoniec + " " + godzinaKoniec);
 
@@ -290,20 +289,31 @@ void InterfejsUI::obsluzKreatorZlecenia() {
 
     Termin okresRealizacji(czasOd, czasDo);
 
-    // 3. Dynamiczny wybór typu usługi przez pracownika
-    std::shared_ptr<Usluga> wybranaUsluga = nullptr;
-    int typUslugi = 0;
-    while (typUslugi != 1 && typUslugi != 2) {
+    // 3. Dynamiczne wczytywanie wtyczek usług transportowych (Architektura Komponentowa)
+    PluginManager pluginManager;
+    pluginManager.zaladujWtyczki("plugins");
+
+    auto dostepneTypy = pluginManager.pobierzDostepneTypy();
+    if (dostepneTypy.empty()) {
+        cout << "[Błąd] Brak dostępnych wtyczek transportowych w katalogu 'plugins/'!" << endl;
+        return;
+    }
+
+    int wyborTypu = 0;
+    while (wyborTypu < 1 || wyborTypu > static_cast<int>(dostepneTypy.size())) {
         cout << "\nWybierz typ usługi transportowej:" << endl;
-        cout << "1. Transport Standardowy" << endl;
-        cout << "2. Transport Ekspresowy" << endl;
+        for (size_t i = 0; i < dostepneTypy.size(); ++i) {
+            cout << (i + 1) << ". Transport " << dostepneTypy[i] << endl;
+        }
         cout << "Wybór: ";
-        if (!(cin >> typUslugi)) {
+        if (!(cin >> wyborTypu)) {
             cin.clear();
             cin.ignore(1000, '\n');
             continue;
         }
     }
+
+    string wybranyTyp = dostepneTypy[wyborTypu - 1];
 
     double dystans, stawka;
     cout << "Podaj dystans (w km): ";
@@ -311,16 +321,22 @@ void InterfejsUI::obsluzKreatorZlecenia() {
     cout << "Podaj stawkę podstawową za km: ";
     cin >> stawka;
 
-    if (typUslugi == 1) {
-        wybranaUsluga = std::make_shared<TransportStandardowy>("Transport standardowy " + idZlecenia, dystans, stawka);
-    } else {
-        double extra;
+    double extra = 0.0;
+    if (wybranyTyp == "Ekspresowy") {
         cout << "Podaj dodatkową opłatę stałą (extra): ";
         cin >> extra;
-        wybranaUsluga = std::make_shared<TransportEkspresowy>("Transport ekspresowy " + idZlecenia, dystans, stawka, extra);
     }
 
-    // 4. Inicjalizacja Zlecenia jako shared_ptr (wszystkie 7 argumentów)
+    // Dynamiczne tworzenie instancji usługi z załadowanej biblioteki .dll/.so
+    string nazwaUslugi = "Transport " + wybranyTyp + " " + idZlecenia;
+    std::shared_ptr<Usluga> wybranaUsluga = pluginManager.utworzUsluge(wybranyTyp, nazwaUslugi, dystans, stawka, extra);
+
+    if (!wybranaUsluga) {
+        cout << "[Błąd] Nie udało się zainicjalizować usługi z modułu dynamicznego!" << endl;
+        return;
+    }
+
+    // 4. Inicjalizacja Zlecenia jako shared_ptr
     auto noweZlecenie = std::make_shared<Zlecenie>(idZlecenia, okresRealizacji, klient, wybranaUsluga, waga, objetosc, kategoria);
 
     // 5. Przypisywanie Pojazdów

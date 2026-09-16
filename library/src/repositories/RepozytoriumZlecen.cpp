@@ -6,7 +6,7 @@
 #include "../../include/repositories/RepozytoriumKlientow.h"
 #include "../../include/repositories/RepozytoriumPojazdow.h"
 #include "../../include/repositories/RepozytoriumPracownikow.h"
-#include "../../include/TransportStandardowy.h"
+#include "../../include/managers/PluginManager.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -161,6 +161,10 @@ void RepozytoriumZlecen::wczytajStan(const std::string& sciezka,
 
     elementy.clear();
 
+    // Inicjalizacja zarządcy wtyczek przed przetwarzaniem linii pliku
+    PluginManager pluginManager;
+    pluginManager.zaladujWtyczki("plugins");
+
     std::string linia;
     while (std::getline(plikZlecen, linia)) {
         while (!linia.empty() && (linia.back() == '\r' || linia.back() == '\n')) {
@@ -195,7 +199,16 @@ void RepozytoriumZlecen::wczytajStan(const std::string& sciezka,
         Termin terminZlecenia(czasOd, czasDo);
 
         auto klient = rKlienci.pobierzKlienta(idKlienta);
-        auto usluga = std::make_shared<TransportStandardowy>("Usluga " + idZlecenia, 100.0, 3.5);
+
+        // Komponentowe utworzenie instancji usługi z załadowanego modułu DLL/SO
+        auto usluga = pluginManager.utworzUsluge("Standardowy", "Usluga " + idZlecenia, 100.0, 3.5);
+
+        if (!usluga) {
+            std::cerr << "[Ostrzeżenie] Nie udało się utworzyć usługi dla zlecenia: " << idZlecenia
+                      << " (brak załadowanej wtyczki Standardowy)\n";
+            continue;
+        }
+
         auto noweZlecenie = std::make_shared<Zlecenie>(idZlecenia, terminZlecenia, klient, usluga, waga, objetosc, wymaganaKat);
 
         std::stringstream pojazdySs(listaPojazdowStr);
