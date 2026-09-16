@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(ATOM_PN_1330_06)
+project(TransportCompany)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -29,8 +29,8 @@ add_library(TransportLibrary STATIC ${LIB_SOURCES})
 target_include_directories(TransportLibrary PUBLIC library/include ${Boost_INCLUDE_DIRS})
 target_link_libraries(TransportLibrary PUBLIC Boost::date_time)
 
-add_executable(ATOM_PN_1330_06 library/main.cpp library/src/Interfejs.cpp)
-target_link_libraries(ATOM_PN_1330_06 PRIVATE TransportLibrary)
+add_executable(TransportCompany library/main.cpp library/src/Interfejs.cpp)
+target_link_libraries(TransportCompany PRIVATE TransportLibrary)
 
 enable_testing()
 
